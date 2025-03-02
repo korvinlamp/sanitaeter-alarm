@@ -3,21 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sanitäter Alarmierung</title>
+    <title>Sanitäter Alarm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 50px;
+        }
+        input, select, button {
+            font-size: 16px;
+            margin: 10px;
+            padding: 10px;
+        }
+        #response {
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
 </head>
 <body>
-    <h2>Sanitäter Alarmieren</h2>
+
+    <h2>Sanitäter Alarmierung</h2>
+    
     <form id="alarmForm">
-        <label>Raum:</label>
-        <input type="text" id="raum" required><br><br>
+        <label for="raum">Raum:</label>
+        <input type="text" id="raum" placeholder="z. B. Raum 101" required>
+        <br>
         
-        <label>AED benötigt?</label>
+        <label for="aed">AED benötigt?</label>
         <select id="aed">
             <option value="Ja">Ja</option>
             <option value="Nein">Nein</option>
-        </select><br><br>
+        </select>
+        <br>
         
-        <button type="submit">Alarm auslösen</button>
+        <button type="submit">🚨 Alarm senden</button>
     </form>
 
     <p id="response"></p>
@@ -28,23 +48,29 @@
             
             var raum = document.getElementById("raum").value;
             var aed = document.getElementById("aed").value;
-
+            
             var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
                       "?value1=" + encodeURIComponent(raum) + 
                       "&value2=" + encodeURIComponent(aed);
 
+            console.log("Sende Anfrage an:", url);
+
             fetch(url)
                 .then(response => {
-                    if (response.ok) {
-                        document.getElementById("response").innerText = "✅ Sanitäter alarmiert. Beginnen Sie mit der Ersten Hilfe!";
-                    } else {
-                        document.getElementById("response").innerText = "⚠ Fehler bei der Alarmierung.";
+                    if (!response.ok) {
+                        throw new Error("Server antwortete mit Status: " + response.status);
                     }
+                    return response.text(); // IFTTT gibt meist eine leere Antwort zurück
+                })
+                .then(() => {
+                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert!";
                 })
                 .catch(error => {
-                    document.getElementById("response").innerText = "❌ Netzwerkfehler!";
+                    console.error("Fehler:", error);
+                    document.getElementById("response").innerText = "⚠ Sanitäter wurden alarmiert, aber es gab eine Netzwerkfehlermeldung.";
                 });
         });
     </script>
+
 </body>
 </html>
