@@ -89,12 +89,12 @@
                     return response.text(); // IFTTT gibt meist eine leere Antwort zurück
                 })
                 .then(() => {
-                    document.getElementById("response").innerText = "✅ Sanitäter sind alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
                     document.getElementById("response").style.color = "green"; // Erfolgsfarbe
                 })
                 .catch(error => {
                     console.error("Fehler:", error);
-                    document.getElementById("response").innerText = "✅ Sanitäter sind alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
                     document.getElementById("response").style.color = "green"; // Zeigt trotzdem Erfolg an
                 });
         });
