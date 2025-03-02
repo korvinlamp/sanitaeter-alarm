@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanitäter Alarmierung</title>
+</head>
+<body>
+    <h2>Sanitäter Alarmieren</h2>
+    <form id="alarmForm">
+        <label>Raum:</label>
+        <input type="text" id="raum" required><br><br>
+        
+        <label>AED benötigt?</label>
+        <select id="aed">
+            <option value="Ja">Ja</option>
+            <option value="Nein">Nein</option>
+        </select><br><br>
+        
+        <button type="submit">Alarm auslösen</button>
+    </form>
+
+    <p id="response"></p>
+
+    <script>
+        document.getElementById("alarmForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            
+            var raum = document.getElementById("raum").value;
+            var aed = document.getElementById("aed").value;
+
+            var url = "https://maker.ifttt.com/trigger/sanitaeter_alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
+                      "?value1=" + encodeURIComponent(raum) + 
+                      "&value2=" + encodeURIComponent(aed);
+
+            fetch(url)
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById("response").innerText = "✅ Sanitäter alarmiert. Beginnen Sie mit der Ersten Hilfe!";
+                    } else {
+                        document.getElementById("response").innerText = "⚠ Fehler bei der Alarmierung.";
+                    }
+                })
+                .catch(error => {
+                    document.getElementById("response").innerText = "❌ Netzwerkfehler!";
+                });
+        });
+    </script>
+</body>
+</html>
