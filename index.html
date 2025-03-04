@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sanitäter Alarm</title>
+    
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -44,9 +45,75 @@
             font-size: 18px;
         }
     </style>
-</head>
-<body>
+    
+    <!-- OneSignal SDK -->
+    <script src="https://cdn.onesignal.com/sdks/OneSignalSDK.js" async></script>
+    
+    <script>
+        window.OneSignal = window.OneSignal || [];
+        OneSignal.push(function() {
+            OneSignal.init({
+                appId: "DEINE_ONESIGNAL_APP_ID", // OneSignal App-ID hier einfügen
+                notifyButton: { enable: true }
+            });
+        });
 
+        function alarmSenden(event) {
+            event.preventDefault();
+
+            var raum = document.getElementById("raum").value;
+            var aed = document.getElementById("aed").value;
+            var standortText = "Standort nicht verfügbar";
+
+            // Standort abrufen
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    var lat = position.coords.latitude;
+                    var lon = position.coords.longitude;
+                    standortText = "https://www.google.com/maps?q=" + lat + "," + lon;
+                    
+                    sendeOneSignal(raum, aed, standortText);
+                }, function(error) {
+                    console.warn("Geolocation-Fehler:", error);
+                    sendeOneSignal(raum, aed, standortText);
+                });
+            } else {
+                sendeOneSignal(raum, aed, standortText);
+            }
+        }
+
+        function sendeOneSignal(raum, aed, standort) {
+            fetch("https://onesignal.com/api/v1/notifications", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Basic DEIN_REST_API_KEY" // Hier deinen REST API Key einfügen
+                },
+                body: JSON.stringify({
+                    app_id: "DEINE_ONESIGNAL_APP_ID", // OneSignal App-ID hier einfügen
+                    included_segments: ["All"], // An alle Nutzer senden
+                    contents: { "en": `🚨 Sanitäter Alarm!\n📍 Raum: ${raum}\n🩺 AED: ${aed}\n🌍 Standort: ${standort}` },
+                    url: standort, // Öffnet Google Maps bei Klick
+                    priority: 10, // Hohe Priorität
+                    android_channel_id: "LAUTER_ALARM_KANAL" // Definiert einen lauten Sound
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log("OneSignal Antwort:", data);
+                document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+                document.getElementById("response").style.color = "green";
+            })
+            .catch(error => {
+                console.error("Fehler:", error);
+                document.getElementById("response").innerText = "⚠ Fehler beim Senden!";
+                document.getElementById("response").style.color = "red";
+            });
+        }
+    </script>
+</head>
+
+<body>
     <div class="container">
         <h2>🚨 Sanitäter Alarmierung</h2>
         
@@ -69,36 +136,7 @@
     </div>
 
     <script>
-        document.getElementById("alarmForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            var raum = document.getElementById("raum").value;
-            var aed = document.getElementById("aed").value;
-            
-            var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
-                      "?value1=" + encodeURIComponent(raum) + 
-                      "&value2=" + encodeURIComponent(aed);
-
-            console.log("Sende Anfrage an:", url);
-
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Server antwortete mit Status: " + response.status);
-                    }
-                    return response.text(); // IFTTT gibt meist eine leere Antwort zurück
-                })
-                .then(() => {
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
-                    document.getElementById("response").style.color = "green"; // Erfolgsfarbe
-                })
-                .catch(error => {
-                    console.error("Fehler:", error);
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
-                    document.getElementById("response").style.color = "green"; // Zeigt trotzdem Erfolg an
-                });
-        });
+        document.getElementById("alarmForm").addEventListener("submit", alarmSenden);
     </script>
-
 </body>
 </html>
