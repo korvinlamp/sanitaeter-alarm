@@ -17,88 +17,210 @@
             border-radius: 10px;
             box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
             display: inline-block;
+            max-width: 600px;
         }
         h2 {
             color: #dc3545;
         }
-        input, select, button {
+        button {
             font-size: 16px;
             margin: 10px;
             padding: 10px;
             width: 80%;
             max-width: 300px;
-        }
-        button {
-            background-color: #dc3545;
-            color: white;
             border: none;
             border-radius: 5px;
             cursor: pointer;
         }
-        button:hover {
-            background-color: #c82333;
+        button.primary {
+            background-color: #28a745;
+            color: white;
+        }
+        button.primary:hover {
+            background-color: #218838;
+        }
+        button.secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
         }
         #response {
             font-weight: bold;
             margin-top: 20px;
             font-size: 18px;
+            color: green;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>🚨 Sanitäter Alarmierung</h2>
-        
-        <form id="alarmForm">
-            <label for="raum">Raum:</label>
-            <input type="text" id="raum" placeholder="z. B. N01" required>
-            <br>
-            
-            <label for="aed">Defibrillator (AED) benötigt?</label>
-            <select id="aed">
-                <option value="Nein">Nein</option>
-                <option value="Ja">Ja</option>
-            </select>
-            <br>
-            
-            <button type="submit">🚨 Alarm senden</button>
-        </form>
+<div class="container">
+    <h2>🚨 Sanitäter Alarmierung</h2>
 
-        <p id="response"></p>
+    <form id="alarmForm">
+        <label for="raum">Raum:</label>
+        <input type="text" id="raum" placeholder="z. B. N01" required><br>
+
+        <label for="aed">Defibrillator (AED) benötigt?</label>
+        <select id="aed">
+            <option value="Nein">Nein</option>
+            <option value="Ja">Ja</option>
+        </select><br>
+
+        <button type="submit" class="secondary">🚨 Alarm senden</button>
+    </form>
+
+    <p id="response"></p>
+    <button id="startGuide" class="primary hidden">🩹 Erste-Hilfe-Anleitung</button>
+
+    <div id="guide" class="hidden">
+        <h3 id="stepTitle"></h3>
+        <div id="stepContent"></div>
+        <div id="stepActions"></div>
+        <button id="backBtn" class="secondary hidden">⬅ Zurück</button>
     </div>
+</div>
 
-    <script>
-        document.getElementById("alarmForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            var raum = document.getElementById("raum").value;
-            var aed = document.getElementById("aed").value;
-            
-            var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
-                      "?value1=" + encodeURIComponent(raum) + 
-                      "&value2=" + encodeURIComponent(aed);
+<script>
+    const guideSteps = [
+        { id: "start", title: "Eigenschutz beachten", options: [{ text: "Weiter", next: "ansprechen" }] },
+        {
+            id: "ansprechen",
+            title: "Reagiert der Patient auf Ansprechen? Anfassen?",
+            options: [
+                { text: "Ja, er reagiert", next: "reagiert" },
+                { text: "Nein, er reagiert nicht", next: "atmenPruefen" }
+            ]
+        },
+        {
+            id: "reagiert",
+            title: "Bleibe ruhig, die Sanitäter sind alarmiert.",
+            content: `<ul>
+                <li>Versorge lebensbedrohliche Verletzungen</li>
+                <li>Wird der Rettungsdienst benötigt? ➡ Notruf 112</li>
+                <li>Betreue den Patienten</li>
+                <li>Denke an den Wärmeerhalt</li>
+            </ul>`,
+            options: []
+        },
+        {
+            id: "atmenPruefen",
+            title: "Prüfe 10 Sekunden, ob der Patient atmet.",
+            options: [
+                { text: "Ja, der Patient atmet", next: "seitenlage" },
+                { text: "Nein, der Patient atmet nicht", next: "notruf" }
+            ]
+        },
+        {
+            id: "notruf",
+            title: "Lasse den Notruf unter 112 absetzen und lasse den Defibrillator (AED) holen.",
+            options: [{ text: "Weiter", next: "wiederbelebung" }]
+        },
+        {
+            id: "wiederbelebung",
+            title: "Starte Wiederbelebung",
+            content: `<ul>
+                <li>Patient liegt auf dem Rücken und Oberkörper ist frei</li>
+            </ul>`,
+            options: [{ text: "Weiter", next: "druckpunkt" }]
+        },
+        {
+            id: "druckpunkt",
+            title: "Druckpunkt: mittig, zwischen den Brustwarzen",
+            content: `<ul>
+                <li>30x 5 cm tief eindrücken + vollständig entlasten</li>
+                <li>2x beatmen: Kopf überstrecken, Nase zuhalten, je 2 Sekunden in den Mund beatmen</li>
+            </ul><p>(Defibrillator anschalten + Anweisungen folgen)</p>`,
+            options: []
+        },
+        {
+            id: "seitenlage",
+            title: "Lege den Patienten in die stabile Seitenlage.",
+            options: [{ text: "Weiter", next: "notruf2" }]
+        },
+        {
+            id: "notruf2",
+            title: "Lasse den Notruf unter 112 absetzen und lasse den Defibrillator (AED) holen.",
+            options: [{ text: "Weiter", next: "atmungPruefen" }]
+        },
+        {
+            id: "atmungPruefen",
+            title: "Alle drei Minuten Atmung erneut prüfen.",
+            options: []
+        }
+    ];
 
-            console.log("Sende Anfrage an:", url);
+    let stepHistory = [];
 
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error("Server antwortete mit Status: " + response.status);
-                    }
-                    return response.text(); // IFTTT gibt meist eine leere Antwort zurück
-                })
-                .then(() => {
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
-                    document.getElementById("response").style.color = "green"; // Erfolgsfarbe
-                })
-                .catch(error => {
-                    console.error("Fehler:", error);
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
-                    document.getElementById("response").style.color = "green"; // Zeigt trotzdem Erfolg an
-                });
+    const guide = document.getElementById("guide");
+    const stepTitle = document.getElementById("stepTitle");
+    const stepContent = document.getElementById("stepContent");
+    const stepActions = document.getElementById("stepActions");
+    const backBtn = document.getElementById("backBtn");
+
+    function showStep(stepId) {
+        const step = guideSteps.find(s => s.id === stepId);
+        if (!step) return;
+
+        stepTitle.innerText = step.title;
+        stepContent.innerHTML = step.content || "";
+        stepActions.innerHTML = "";
+
+        step.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "primary";
+            btn.innerText = opt.text;
+            btn.onclick = () => {
+                stepHistory.push(stepId);
+                showStep(opt.next);
+            };
+            stepActions.appendChild(btn);
         });
-    </script>
+
+        backBtn.classList.toggle("hidden", stepHistory.length === 0);
+    }
+
+    backBtn.addEventListener("click", () => {
+        const lastStep = stepHistory.pop();
+        if (lastStep) showStep(lastStep);
+    });
+
+    document.getElementById("alarmForm").addEventListener("submit", function(event) {
+        event.preventDefault();
+
+        var raum = document.getElementById("raum").value;
+        var aed = document.getElementById("aed").value;
+
+        var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
+                  "?value1=" + encodeURIComponent(raum) +
+                  "&value2=" + encodeURIComponent(aed);
+
+        fetch(url)
+            .then(response => {
+                if (!response.ok) throw new Error("Fehler beim Senden.");
+                return response.text();
+            })
+            .then(() => {
+                document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+                document.getElementById("startGuide").classList.remove("hidden");
+            })
+            .catch(() => {
+                document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+                document.getElementById("startGuide").classList.remove("hidden");
+            });
+    });
+
+    document.getElementById("startGuide").addEventListener("click", () => {
+        guide.classList.remove("hidden");
+        stepHistory = [];
+        showStep("start");
+    });
+</script>
 
 </body>
 </html>
