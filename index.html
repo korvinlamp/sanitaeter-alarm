@@ -1,287 +1,263 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sanitäter Alarm</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 50px;
-      background-color: #f8f9fa;
-      text-align: center;
-    }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      display: inline-block;
-      max-width: 600px;
-    }
-    h2 {
-      color: #dc3545;
-    }
-    button {
-      font-weight: bold;
-      font-size: 16px;
-      margin: 10px;
-      padding: 10px;
-      width: 80%;
-      max-width: 300px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    button.primary {
-      background-color: #a8f0a0;
-      color: black;
-    }
-    button.primary:hover {
-      background-color: #90e690;
-    }
-    button.secondary {
-      background-color: #6c757d;
-      color: white;
-    }
-    button.secondary:hover {
-      background-color: #5a6268;
-    }
-    button.danger {
-      background-color: #dc3545;
-      color: white;
-    }
-    button.danger:hover {
-      background-color: #c82333;
-    }
-    input, select {
-      font-size: 16px;
-      padding: 14px;
-      width: 80%;
-      max-width: 300px;
-      margin: 10px 0;
-    }
-    #response {
-      font-weight: bold;
-      margin-top: 20px;
-      font-size: 18px;
-      color: green;
-    }
-    .hidden {
-      display: none;
-    }
-    ul {
-      text-align: left;
-      padding-left: 20px;
-      font-size: 18px;
-    }
-    .blink {
-      animation: blink 1s infinite;
-      font-weight: bold;
-      color: red;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Sanitäter Alarm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f9f0;
+            text-align: center;
+            padding: 30px;
+            font-size: 20px;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 0 10px rgba(0,0,0,0.2);
+        }
+        h2, h3 {
+            color: #dc3545;
+        }
+        label, input, select {
+            font-size: 20px;
+            margin: 10px 0;
+            display: block;
+            width: 90%;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        input, select {
+            padding: 10px;
+        }
+        button {
+            font-weight: bold;
+            font-size: 20px;
+            margin: 10px auto;
+            padding: 15px;
+            width: 80%;
+            max-width: 350px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: block;
+        }
+        button.primary {
+            background-color: #b6f5b6;
+            color: black;
+        }
+        button.danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        button.secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .hidden {
+            display: none;
+        }
+        ul {
+            text-align: left;
+            padding-left: 25px;
+            font-size: 20px;
+            line-height: 1.6;
+        }
+        .blink {
+            animation: blink 1s infinite;
+            font-weight: bold;
+            color: red;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
+
+<div class="container">
     <h2>🚨 Sanitäter Alarmierung</h2>
 
     <form id="alarmForm">
-      <label for="raum">Raum:</label><br>
-      <input type="text" id="raum" placeholder="z. B. N01" required><br>
+        <label for="raum">Raum:</label>
+        <input type="text" id="raum" placeholder="z. B. N01" required>
 
-      <label for="aed">Defibrillator (AED) benötigt?</label><br>
-      <select id="aed">
-        <option value="Nein">Nein</option>
-        <option value="Ja">Ja</option>
-      </select><br>
+        <label for="aed">Defibrillator (AED) benötigt?</label>
+        <select id="aed">
+            <option value="Nein">Nein</option>
+            <option value="Ja">Ja</option>
+        </select>
 
-      <button type="submit" class="danger">🚨 Alarm senden</button>
+        <button type="submit" class="danger">🚨 Alarm senden</button>
     </form>
 
     <div id="postAlarm" class="hidden">
-      <p id="response">✅ Sanitäter sind alarmiert!</p>
-      <button id="startGuide" class="primary">🚨 Erste Hilfe Anleitung</button>
+        <p id="response">✅ Sanitäter sind alarmiert!</p>
+        <button id="startGuide" class="primary">🚨 Erste Hilfe Anleitung</button>
     </div>
 
     <div id="guide" class="hidden">
-      <h3 id="stepTitle"></h3>
-      <div id="stepContent"></div>
-      <div id="stepActions"></div>
-      <button id="backBtn" class="secondary hidden">⬅ Zurück</button>
+        <h3 id="stepTitle"></h3>
+        <div id="stepContent"></div>
+        <div id="stepActions"></div>
+        <button id="backBtn" class="secondary hidden">⬅ Zurück</button>
     </div>
-  </div>
+</div>
 
-  <script>
-    const guideSteps = [
-      { id: "start", title: "Eigenschutz beachten!", options: [{ text: "Weiter", next: "ansprechen" }] },
-      {
+<script>
+const guideSteps = [
+    { id: "start", title: "Eigenschutz beachten!", options: [{ text: "Weiter", next: "ansprechen" }] },
+    {
         id: "ansprechen",
-        title: "Reagiert der Patient auf Ansprechen und Anfassen?",
+        title: "Ansprechen und Anfassen?",
         options: [
-          { text: "Ja, er reagiert", next: "reagiert" },
-          { text: "Nein, er reagiert NICHT", next: "atmenPruefen" }
+            { text: "Ja, er reagiert", next: "reagiert" },
+            { text: "Nein, er reagiert NICHT", next: "atmenPruefen" }
         ]
-      },
-      {
+    },
+    {
         id: "reagiert",
         title: "Bleibe ruhig, die Sanitäter sind alarmiert.",
         content: `<ul>
-          <li>Versorge lebensbedrohliche Verletzungen</li>
-          <li>Wird der Rettungsdienst benötigt? ➡ Notruf 112</li>
-          <li>Betreue den Patienten</li>
-          <li>Denke an den Wärmeerhalt</li>
+            <li>Versorge lebensbedrohliche Verletzungen</li>
+            <li>Wird der Rettungsdienst benötigt? ➡ Notruf 112</li>
+            <li>Betreue den Patienten</li>
+            <li>Denke an den Wärmeerhalt</li>
         </ul>`,
         options: []
-      },
-      {
+    },
+    {
         id: "atmenPruefen",
         title: "Prüfe 10 Sekunden, ob der Patient atmet.",
         content: `<ul>
-          <li>Patient liegt auf dem Rücken</li>
-          <li>Oberkörper ist entkleidet</li>
-          <li>Kopf ist überstreckt</li>
+            <li>Patient liegt auf dem Rücken</li>
+            <li>Oberkörper ist entkleidet</li>
+            <li>Kopf ist überstreckt</li>
         </ul>`,
         options: [
-          { text: "Ja, der Patient atmet", next: "seitenlage" },
-          { text: "Nein, der Patient atmet NICHT", next: "notruf" }
+            { text: "Ja, der Patient atmet", next: "seitenlage" },
+            { text: "Nein, der Patient atmet NICHT", next: "notruf" }
         ]
-      },
-      {
-        id: "notruf",
-        title: "Lasse den Notruf unter 112 absetzen und lasse den Defibrillator (AED) holen.",
-        options: [{ text: "Weiter", next: "druckpunkt" }]
-      },
-      {
-        id: "druckpunkt",
-        title: "Starte Wiederbelebung\nDruckpunkt: mittig, zwischen den Brustwarzen",
-        content: `<ul>
-          <li><strong>30x</strong> 5 cm tief eindrücken + vollständig entlasten</li>
-          <li><strong>2x</strong> für jeweils 2 Sekunden beatmen: Kopf überstrecken, Nase zuhalten, in den Mund beatmen</li>
-          <li>(Defibrillator einschalten + Anweisungen folgen)</li>
-        </ul>
-        <button onclick="startMetronome()" class="primary">▶ Metronom starten (100 BPM)</button>`,
-        options: []
-      },
-      {
+    },
+    {
         id: "seitenlage",
         title: "Lege den Patienten in die stabile Seitenlage.",
-        options: [{ text: "Weiter", next: "notruf2" }]
-      },
-      {
-        id: "notruf2",
+        options: [{ text: "Weiter", next: "notruf" }]
+    },
+    {
+        id: "notruf",
         title: "Lasse den Notruf unter 112 absetzen und lasse den Defibrillator (AED) holen.",
         options: [{ text: "Weiter", next: "timer" }]
-      },
-      {
+    },
+    {
         id: "timer",
         title: "Atmung in 2 Minuten 30 erneut überprüfen",
-        content: `<p id="countdown">⏳ Atmung erneut überprüfen in: 2:30</p>
-                  <button onclick="showStep('atmenPruefen')" class="primary">Atmung überprüfen</button>`,
+        content: `
+            <p id="countdown">⏳ Atmung erneut überprüfen in: 2:30</p>
+            <button class="primary" onclick="showStep('atmenPruefen')">Atmung überprüfen</button>
+        `,
         options: []
-      },
-      {
+    },
+    {
         id: "atmungCheck",
         title: "<span class='blink'>ATEMUNG ÜBERPRÜFEN</span>",
         options: [
-          { text: "Atmung überprüfen", next: "atmenPruefen" }
+            { text: "Atmung überprüfen", next: "atmenPruefen" }
         ]
-      }
-    ];
+    },
+    {
+        id: "druckpunkt",
+        title: "Starte Wiederbelebung",
+        content: `
+            <p><strong>Druckpunkt:</strong> mittig, zwischen den Brustwarzen</p>
+            <ul>
+                <li><strong>30x</strong> 5 cm tief eindrücken + vollständig entlasten</li>
+                <li><strong>2x</strong> für jeweils 2 Sekunden beatmen</li>
+                <li>(Defibrillator einschalten + Anweisungen folgen)</li>
+            </ul>
+            <button onclick="toggleMetronome(this)" class="primary">▶ Metronom starten (100 BPM)</button>
+        `,
+        options: []
+    }
+];
 
-    let stepHistory = [];
-    let countdownInterval;
-    const guide = document.getElementById("guide");
-    const stepTitle = document.getElementById("stepTitle");
-    const stepContent = document.getElementById("stepContent");
-    const stepActions = document.getElementById("stepActions");
-    const backBtn = document.getElementById("backBtn");
+let stepHistory = [];
+let countdownInterval;
+let metronomeInterval = null;
+const beep = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
 
-    function showStep(stepId) {
-      clearInterval(countdownInterval);
-      const step = guideSteps.find(s => s.id === stepId);
-      if (!step) return;
-      stepTitle.innerHTML = step.title;
-      stepContent.innerHTML = step.content || "";
-      stepActions.innerHTML = "";
+function showStep(stepId) {
+    clearInterval(countdownInterval);
+    const step = guideSteps.find(s => s.id === stepId);
+    if (!step) return;
 
-      step.options.forEach(opt => {
+    document.getElementById("stepTitle").innerHTML = step.title;
+    document.getElementById("stepContent").innerHTML = step.content || "";
+    document.getElementById("stepActions").innerHTML = "";
+
+    step.options.forEach(opt => {
         const btn = document.createElement("button");
         btn.className = "primary";
         btn.innerText = opt.text;
         btn.onclick = () => {
-          stepHistory.push(stepId);
-          showStep(opt.next);
+            stepHistory.push(stepId);
+            showStep(opt.next);
         };
-        stepActions.appendChild(btn);
-      });
+        document.getElementById("stepActions").appendChild(btn);
+    });
 
-      backBtn.classList.toggle("hidden", stepHistory.length === 0);
+    document.getElementById("backBtn").classList.toggle("hidden", stepHistory.length === 0);
 
-      if (stepId === "timer") {
-        startCountdown(150); // 2 Minuten 30
-      }
-    }
+    if (stepId === "timer") startCountdown(150); // 2:30 min
+}
 
-    function startCountdown(seconds) {
-      const display = document.getElementById("countdown");
-      countdownInterval = setInterval(() => {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        display.textContent = `⏳ Atmung erneut überprüfen in: ${min}:${sec < 10 ? '0' : ''}${sec}`;
+function startCountdown(seconds) {
+    const display = document.getElementById("countdown");
+    countdownInterval = setInterval(() => {
         if (seconds <= 0) {
-          clearInterval(countdownInterval);
-          showStep("atmungCheck");
+            clearInterval(countdownInterval);
+            showStep("atmungCheck");
+        } else {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            display.innerText = `⏳ Atmung erneut überprüfen in: ${min}:${sec.toString().padStart(2, '0')}`;
+            seconds--;
         }
-        seconds--;
-      }, 1000);
+    }, 1000);
+}
+
+function toggleMetronome(button) {
+    if (metronomeInterval) {
+        clearInterval(metronomeInterval);
+        metronomeInterval = null;
+        button.innerText = "▶ Metronom starten (100 BPM)";
+    } else {
+        metronomeInterval = setInterval(() => beep.play(), 600); // 100 BPM = 600ms pro Schlag
+        button.innerText = "⏹ Metronom stoppen";
     }
+}
 
-    function startMetronome() {
-      const bpm = 100;
-      const interval = 60000 / bpm;
-      const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-      let metronomeInterval = setInterval(() => {
-        audio.play();
-      }, interval);
-      setTimeout(() => clearInterval(metronomeInterval), 60000); // 1 Minute Demo
+document.getElementById("alarmForm").addEventListener("submit", function(e) {
+    e.preventDefault();
+    document.getElementById("alarmForm").classList.add("hidden");
+    document.getElementById("postAlarm").classList.remove("hidden");
+});
+
+document.getElementById("startGuide").addEventListener("click", function() {
+    document.getElementById("postAlarm").classList.add("hidden");
+    document.getElementById("guide").classList.remove("hidden");
+    showStep("start");
+});
+
+document.getElementById("backBtn").addEventListener("click", function() {
+    if (stepHistory.length > 0) {
+        const prevStep = stepHistory.pop();
+        showStep(prevStep);
     }
-
-    backBtn.addEventListener("click", () => {
-      const lastStep = stepHistory.pop();
-      if (lastStep) showStep(lastStep);
-    });
-
-    document.getElementById("alarmForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-
-      const raum = document.getElementById("raum").value;
-      const aed = document.getElementById("aed").value;
-
-      const url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
-                  "?value1=" + encodeURIComponent(raum) +
-                  "&value2=" + encodeURIComponent(aed);
-
-      fetch(url)
-        .then(() => {
-          document.getElementById("alarmForm").classList.add("hidden");
-          document.getElementById("postAlarm").classList.remove("hidden");
-        })
-        .catch(() => {
-          document.getElementById("alarmForm").classList.add("hidden");
-          document.getElementById("postAlarm").classList.remove("hidden");
-        });
-    });
-
-    document.getElementById("startGuide").addEventListener("click", () => {
-      guide.classList.remove("hidden");
-      stepHistory = [];
-      showStep("start");
-    });
-  </script>
-</body>
-</html>
+});
+ 
