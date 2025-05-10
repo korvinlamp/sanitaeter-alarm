@@ -1,236 +1,281 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sanitäter Alarm</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"> <!-- Für das rote Plus-Symbol -->
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      margin: 50px;
-      background-color: #f8f9fa;
-    }
-    .container {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-      display: inline-block;
-      max-width: 600px;
-      width: 100%;
-    }
-    h2 {
-      color: #dc3545;
-    }
-    input, select {
-      font-size: 18px;
-      margin: 10px;
-      padding: 15px;
-      width: 80%;
-      max-width: 300px;
-      line-height: 2em;
-    }
-    button {
-      font-weight: bold;
-      font-size: 16px;
-      margin: 10px;
-      padding: 15px;
-      width: 80%;
-      max-width: 300px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-    }
-    .alarm-button {
-      background-color: #dc3545;
-      color: white;
-    }
-    .alarm-button:hover {
-      background-color: #c82333;
-    }
-    .first-aid-button {
-      background-color: #90ee90; /* Helleres Grün für bessere Lesbarkeit */
-      color: black;
-    }
-    .first-aid-button:hover {
-      background-color: #76c776;
-    }
-    #response {
-      font-weight: bold;
-      margin-top: 20px;
-      font-size: 18px;
-    }
-    .hidden {
-      display: none;
-    }
-    .step-content {
-      text-align: left;
-      margin-top: 20px;
-    }
-    .step-content ul {
-      list-style-type: disc;
-      padding-left: 20px;
-    }
-    .step-content li {
-      margin-bottom: 10px;
-      font-size: 18px;
-    }
-    .back-button {
-      background-color: #6c757d;
-      color: white;
-    }
-    .back-button:hover {
-      background-color: #5a6268;
-    }
-    .blink {
-      animation: blinker 1s linear infinite;
-      color: red;
-      font-weight: bold;
-    }
-    @keyframes blinker {
-      50% { opacity: 0; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sanitäter Alarm</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 50px;
+            background-color: #f8f9fa;
+            text-align: center;
+        }
+        .container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            display: inline-block;
+            max-width: 600px;
+        }
+        h2 {
+            color: #dc3545;
+        }
+        input, select {
+            font-size: 18px;
+            margin: 10px;
+            padding: 15px;
+            width: 80%;
+            max-width: 300px;
+        }
+        button {
+            font-weight: bold;
+            font-size: 16px;
+            margin: 10px;
+            padding: 10px;
+            width: 80%;
+            max-width: 300px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button.primary {
+            background-color: #b6f7b0;
+            color: black;
+        }
+        button.primary:hover {
+            background-color: #a2e49a;
+        }
+        button.secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        button.secondary:hover {
+            background-color: #5a6268;
+        }
+        button.danger {
+            background-color: #dc3545;
+            color: white;
+        }
+        button.danger:hover {
+            background-color: #c82333;
+        }
+        #response {
+            font-weight: bold;
+            margin-top: 20px;
+            font-size: 18px;
+            color: green;
+        }
+        .hidden {
+            display: none;
+        }
+        ul {
+            text-align: left;
+            padding-left: 30px;
+            font-size: 18px;
+            line-height: 1.6em;
+        }
+        .blink {
+            animation: blink 1s infinite;
+            font-weight: bold;
+            color: red;
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+    </style>
 </head>
 <body>
 
-  <div class="container" id="alarmContainer">
+<div class="container">
     <h2>🚨 Sanitäter Alarmierung</h2>
-    
+
     <form id="alarmForm">
-      <label for="raum">Raum:</label><br>
-      <input type="text" id="raum" placeholder="z. B. N01" required><br>
-      
-      <label for="aed">Defibrillator (AED) benötigt?</label><br>
-      <select id="aed">
-        <option value="Nein">Nein</option>
-        <option value="Ja">Ja</option>
-      </select><br>
-      
-      <button type="submit" class="alarm-button">🚨 Alarm senden</button>
+        <label for="raum">Raum:</label><br>
+        <input type="text" id="raum" placeholder="z. B. N01" required><br>
+
+        <label for="aed">Defibrillator (AED) benötigt?</label><br>
+        <select id="aed">
+            <option value="Nein">Nein</option>
+            <option value="Ja">Ja</option>
+        </select><br>
+
+        <button type="submit" class="danger">🚨 Alarm senden</button>
     </form>
 
-    <p id="response"></p>
-  </div>
+    <div id="postAlarm" class="hidden">
+        <p id="response">✅ Sanitäter sind alarmiert!</p>
+        <button id="startGuide" class="primary">➕ Erste-Hilfe-Anleitung</button>
+    </div>
 
-  <div class="container hidden" id="postAlarmContainer">
-    <h2>✅ Sanitäter sind alarmiert!</h2>
-    <button class="first-aid-button" id="firstAidButton"><i class="fa fa-plus-circle" style="color:red;"></i> Erste-Hilfe-Anleitung</button>
-  </div>
+    <div id="guide" class="hidden">
+        <h3 id="stepTitle"></h3>
+        <div id="stepContent"></div>
+        <div id="stepActions"></div>
+        <button id="atmungBtn" class="primary hidden">Atmung überprüfen</button>
+        <button id="backBtn" class="secondary hidden">⬅ Zurück</button>
+    </div>
+</div>
 
-  <div class="container hidden" id="firstAidContainer">
-    <div id="stepContent" class="step-content"></div>
-    <button class="back-button" id="backButton">⬅️ Zurück</button>
-    <button class="first-aid-button" id="nextButton">Weiter ➡️</button>
-  </div>
-
-  <script>
-    const steps = [
-      {
-        content: '<h3>Eigenschutz beachten!</h3>',
-        back: null
-      },
-      {
-        content: '<h3>Reagiert der Patient auf ansprechen / anfassen?</h3><button onclick="handleResponse(\'reagiert\')">Ja, er reagiert</button><button onclick="handleResponse(\'nichtReagiert\')">Nein, er reagiert NICHT</button>',
-        back: 0
-      },
-      {
-        content: '<h3>Prüfe 10 Sekunden, ob der Patient atmet.</h3><button onclick="handleResponse(\'atmet\')">Ja, der Patient atmet</button><button onclick="handleResponse(\'nichtAtmet\')">Nein, der Patient atmet NICHT</button>',
-        back: 1
-      },
-      {
-        content: '<h3>Lasse den Notruf unter der 112 absetzen und lasse den Defibrillator (AED) holen.</h3><button onclick="nextStep()">Weiter ➡️</button>',
-        back: 2
-      },
-      {
-        content: '<h3>Starte Wiederbelebung</h3><ul><li><strong>Druckpunkt:</strong> mittig, zwischen den Brustwarzen</li><li><strong>30x</strong> 5 cm tief eindrücken plus vollständig entlasten</li><li><strong>2x</strong> für jeweils 2 Sekunden beatmen: Kopf überstrecken, Nase zuhalten und in den Mund beatmen</li><li>(Defibrillator einschalten und Anweisungen folgen)</li></ul>',
-        back: 3
-      },
-      {
-        content: '<h3>Lege den Patienten in die stabile Seitenlage.</h3><button onclick="startTimer()">Weiter ➡️</button>',
-        back: 2
-      },
-      {
-        content: '<h3>Atmung in 2 Minuten 30 erneut überprüfen</h3><p id="timer">02:30</p><button onclick="restartTimer()">Atmung überprüfen</button>',
-        back: 5
-      },
-      {
-        content: '<h3>Bleibe ruhig, die Sanitäter sind alarmiert.</h3><ul><li>Versorge lebensbedrohliche Verletzungen</li><li>Wird der Rettungsdienst benötigt? ➡️ Notruf 112</li><li>Betreue den Patienten</li><li>Denke an den Wärmeerhalt</li></ul>',
-        back: 1
-      }
+<script>
+    const guideSteps = [
+        { id: "start", title: "Eigenschutz beachten!", options: [{ text: "Weiter", next: "ansprechen" }] },
+        {
+            id: "ansprechen",
+            title: "Reagiert der Patient auf ansprechen // anfassen?",
+            options: [
+                { text: "Ja, er reagiert", next: "reagiert" },
+                { text: "Nein, er reagiert NICHT", next: "atmenPruefen" }
+            ]
+        },
+        {
+            id: "reagiert",
+            title: "Bleibe ruhig, die Sanitäter sind alarmiert.",
+            content: `<ul>
+                <li>Versorge lebensbedrohliche Verletzungen</li>
+                <li>Wird der Rettungsdienst benötigt? ➡ Notruf 112</li>
+                <li>Betreue den Patienten</li>
+                <li>Denke an den Wärmeerhalt</li>
+            </ul>`,
+            options: []
+        },
+        {
+            id: "atmenPruefen",
+            title: "Prüfe 10 Sekunden, ob der Patient atmet.",
+            content: `<ul>
+                <li>Patient liegt auf dem Rücken</li>
+                <li>Oberkörper ist entkleidet</li>
+                <li>Kopf ist überstreckt</li>
+            </ul>`,
+            options: [
+                { text: "Ja, der Patient atmet", next: "seitenlage" },
+                { text: "Nein, der Patient atmet NICHT", next: "notruf" }
+            ]
+        },
+        {
+            id: "notruf",
+            title: "Lasse den Notruf unter 112 absetzen und lasse den Defibrillator (AED) holen.",
+            options: [{ text: "Weiter", next: "druckpunkt" }]
+        },
+        {
+            id: "druckpunkt",
+            title: "Starte Wiederbelebung",
+            content: `<h4>Druckpunkt: mittig, zwischen den Brustwarzen</h4>
+            <ul>
+                <li><strong>30x</strong> 5 cm tief eindrücken + vollständig entlasten</li>
+                <li><strong>2x</strong> für jeweils 2 Sekunden beatmen: Kopf überstrecken, Nase zuhalten, in den Mund beatmen</li>
+                <li>(Defibrillator einschalten + Anweisungen folgen)</li>
+            </ul>`,
+            options: []
+        },
+        {
+            id: "seitenlage",
+            title: "Lege den Patienten in die stabile Seitenlage.",
+            options: [{ text: "Weiter", next: "timer" }]
+        },
+        {
+            id: "timer",
+            title: "Atmung in 2 Minuten 30 erneut überprüfen",
+            content: `<p id="countdown">⏳ Atmung erneut überprüfen in: 2:30</p>`,
+            options: []
+        },
+        {
+            id: "atmungCheck",
+            title: "<span class='blink'>ATEMUNG ÜBERPRÜFEN</span>",
+            options: [
+                { text: "Atmung überprüfen", next: "atmenPruefen" }
+            ]
+        }
     ];
 
-    let currentStep = 0;
-    let timerInterval;
-    let timerSeconds = 150;
+    let stepHistory = [];
+    let countdownInterval;
+
+    const guide = document.getElementById("guide");
+    const stepTitle = document.getElementById("stepTitle");
+    const stepContent = document.getElementById("stepContent");
+    const stepActions = document.getElementById("stepActions");
+    const backBtn = document.getElementById("backBtn");
+    const atmungBtn = document.getElementById("atmungBtn");
+
+    function showStep(stepId) {
+        clearInterval(countdownInterval);
+        const step = guideSteps.find(s => s.id === stepId);
+        if (!step) return;
+
+        stepTitle.innerHTML = step.title;
+        stepContent.innerHTML = step.content || "";
+        stepActions.innerHTML = "";
+        atmungBtn.classList.toggle("hidden", stepId !== "timer" && stepId !== "atmungCheck");
+
+        step.options.forEach(opt => {
+            const btn = document.createElement("button");
+            btn.className = "primary";
+            btn.innerText = opt.text;
+            btn.onclick = () => {
+                stepHistory.push(stepId);
+                showStep(opt.next);
+            };
+            stepActions.appendChild(btn);
+        });
+
+        backBtn.classList.toggle("hidden", stepHistory.length === 0);
+
+        if (stepId === "timer") {
+            startCountdown(150); // 2 Minuten 30
+        }
+    }
+
+    function startCountdown(seconds) {
+        const display = document.getElementById("countdown");
+        countdownInterval = setInterval(() => {
+            const min = Math.floor(seconds / 60);
+            const sec = seconds % 60;
+            display.textContent = `⏳ Atmung erneut überprüfen in: ${min}:${sec < 10 ? '0' : ''}${sec}`;
+            if (seconds <= 0) {
+                clearInterval(countdownInterval);
+                showStep("atmungCheck");
+            }
+            seconds--;
+        }, 1000);
+    }
+
+    backBtn.addEventListener("click", () => {
+        const lastStep = stepHistory.pop();
+        if (lastStep) showStep(lastStep);
+    });
+
+    atmungBtn.addEventListener("click", () => showStep("atmenPruefen"));
 
     document.getElementById("alarmForm").addEventListener("submit", function(event) {
-      event.preventDefault();
-      
-      var raum = document.getElementById("raum").value;
-      var aed = document.getElementById("aed").value;
-      
-      var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
-                "?value1=" + encodeURIComponent(raum) + 
-                "&value2=" + encodeURIComponent(aed);
+        event.preventDefault();
 
-      fetch(url)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error("Server antwortete mit Status: " + response.status);
-          }
-          return response.text();
-        })
-        .then(() => {
-          document.getElementById("alarmContainer").classList.add("hidden");
-          document.getElementById("postAlarmContainer").classList.remove("hidden");
-        })
-        .catch(error => {
-          console.error("Fehler:", error);
-          document.getElementById("alarmContainer").classList.add("hidden");
-          document.getElementById("postAlarmContainer").classList.remove("hidden");
-        });
+        const raum = document.getElementById("raum").value;
+        const aed = document.getElementById("aed").value;
+
+        const url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
+                    "?value1=" + encodeURIComponent(raum) +
+                    "&value2=" + encodeURIComponent(aed);
+
+        fetch(url)
+            .then(() => {
+                document.getElementById("alarmForm").classList.add("hidden");
+                document.getElementById("postAlarm").classList.remove("hidden");
+            })
+            .catch(() => {
+                document.getElementById("alarmForm").classList.add("hidden");
+                document.getElementById("postAlarm").classList.remove("hidden");
+            });
     });
 
-    document.getElementById("firstAidButton").addEventListener("click", function() {
-      document.getElementById("postAlarmContainer").classList.add("hidden");
-      document.getElementById("firstAidContainer").classList.remove("hidden");
-      showStep(0);
+    document.getElementById("startGuide").addEventListener("click", () => {
+        guide.classList.remove("hidden");
+        stepHistory = [];
+        showStep("start");
     });
+</script>
 
-    document.getElementById("backButton").addEventListener("click", function() {
-      if (steps[currentStep].back !== null) {
-        showStep(steps[currentStep].back);
-      }
-    });
-
-    document.getElementById("nextButton").addEventListener("click", function() {
-      if (currentStep + 1 < steps.length) {
-        showStep(currentStep + 1);
-      }
-    });
-
-    function showStep(index) {
-      currentStep = index;
-      document.getElementById("stepContent").innerHTML = steps[index].content;
-      document.getElementById("backButton").style.display = steps[index].back !== null ? "inline-block" : "none";
-      document.getElementById("nextButton").style.display = index === 1 || index === 2 || index === 6 || index === 7 ? "none" : "inline-block";
-    }
-
-    function handleResponse(response) {
-      if (response === "reagiert") {
-        showStep(7);
-      } else if (response === "nichtReagiert") {
-        showStep(2);
-      } else if (response === "atmet") {
-        showStep(5);
-      } else if (response === "nichtAtmet") {
-        showStep(3);
-      }
-    }
-
-    function startTimer() {
-      showStep(6);
- 
+</body>
+</html>
