@@ -3,94 +3,69 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sanitäter Alarm</title>
+  <title>Erste Hilfe Anleitung</title>
   <style>
-    html, body {
+    body {
       margin: 0;
       padding: 0;
-      font-family: Arial, sans-serif;
-      background-color: #f0f2f5;
-      color: #000;
-      font-size: 1.1em;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background-color: #f8f9fa;
+      color: #212529;
     }
     .container {
-      background: white;
-      padding: 20px;
+      max-width: 600px;
       margin: auto;
-      max-width: 100%;
-      width: 95%;
-      box-sizing: border-box;
-      border-radius: 10px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      padding: 20px;
     }
-    h1.guide-header {
-      color: #28a745;
+    h1 {
       text-align: center;
+      color: #28a745;
       display: none;
-      margin-top: 0;
     }
     h2 {
       color: #dc3545;
-      font-size: 1.6em;
-      margin-bottom: 10px;
     }
-    h3 {
-      font-size: 1.3em;
-      margin-bottom: 10px;
+    .hidden {
+      display: none;
     }
-    button {
-      font-size: 1em;
-      padding: 12px;
-      margin: 10px auto;
+    .button {
+      display: block;
       width: 100%;
-      max-width: 350px;
+      padding: 10px;
+      margin: 10px 0;
+      font-size: 1em;
       border: none;
-      border-radius: 8px;
+      border-radius: 5px;
       cursor: pointer;
-      display: block;
     }
-    button.primary { background-color: #a8f0a0; color: black; }
-    button.primary:hover { background-color: #90e690; }
-    button.secondary { background-color: #6c757d; color: white; }
-    button.secondary:hover { background-color: #5a6268; }
-    button.danger { background-color: #dc3545; color: white; }
-    button.danger:hover { background-color: #c82333; }
-    input, select {
-      font-size: 1em;
-      padding: 12px;
-      width: 100%;
-      max-width: 350px;
-      margin: 10px auto;
-      display: block;
+    .button-primary {
+      background-color: #007bff;
+      color: #fff;
     }
-    #response {
+    .button-danger {
+      background-color: #dc3545;
+      color: #fff;
+    }
+    .button-secondary {
+      background-color: #6c757d;
+      color: #fff;
+    }
+    .highlight {
+      color: red;
       font-weight: bold;
-      font-size: 1.4em;
-      color: green;
+    }
+    .metronome {
       margin-top: 20px;
+      text-align: center;
     }
-    .hidden { display: none; }
-    ul {
-      padding-left: 20px;
-      text-align: left;
-      line-height: 1.6em;
+    .countdown {
+      font-size: 1.5em;
+      text-align: center;
+      margin: 20px 0;
     }
-    .blink {
-      animation: blink 1s infinite;
-      font-weight: bold;
-      color: red;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0; }
-    }
-    .rot {
-      color: red;
-      font-weight: bold;
-    }
-    img.guide-image {
-      width: 100%;
-      max-width: 400px;
+    img {
+      max-width: 100%;
+      height: auto;
       display: block;
       margin: 20px auto;
     }
@@ -99,11 +74,11 @@
 <body>
   <div class="container">
     <h2 id="mainHeader">🚨 Sanitäter Alarmierung</h2>
-    <h1 id="guideHeader" class="guide-header">Erste Hilfe Anleitung</h1>
+    <h1 id="guideHeader">Erste Hilfe Anleitung</h1>
 
     <form id="alarmForm">
-      <label for="raum">Raum:</label>
-      <input type="text" id="raum" placeholder="z. B. N01" required>
+      <label for="room">Raum:</label>
+      <input type="text" id="room" required />
 
       <label for="aed">Defibrillator (AED) benötigt?</label>
       <select id="aed">
@@ -111,28 +86,33 @@
         <option value="Ja">Ja</option>
       </select>
 
-      <button type="submit" class="danger">🚨 Alarm senden</button>
+      <button type="submit" class="button button-danger">🚨 Alarm senden</button>
     </form>
 
     <div id="postAlarm" class="hidden">
-      <p id="response"><strong>✅ Sanitäter sind alarmiert!</strong></p>
-      <button id="startGuide" class="primary">🚨 Erste Hilfe Anleitung</button>
+      <p><strong style="font-size: 1.2em;">✅ <span style="font-size: 1.5em;">Sanitäter sind alarmiert!</span></strong></p>
+      <button id="startGuide" class="button button-primary">🚨 Erste Hilfe Anleitung</button>
     </div>
 
     <div id="guide" class="hidden">
-      <h3 id="stepTitle"></h3>
       <div id="stepContent"></div>
       <div id="stepActions"></div>
-      <button id="backBtn" class="secondary hidden">⬅ Zurück</button>
+      <button id="backBtn" class="button button-secondary hidden">⬅ Zurück</button>
     </div>
   </div>
 
   <script>
-    const guideSteps = [
-      { id: "start", title: "Eigenschutz beachten!", content: "<p><strong>Laut um Hilfe rufen!</strong></p>", options: [{ text: "Weiter", next: "ansprechen" }] },
+    const steps = [
+      {
+        id: "start",
+        title: "Eigenschutz beachten!",
+        content: "<p><strong>Laut um Hilfe rufen!</strong></p>",
+        options: [{ text: "Weiter", next: "ansprechen" }]
+      },
       {
         id: "ansprechen",
-        title: "Reagiert der Patient auf Ansprechen und Anfassen?",
+        title: "Ansprechen und Anfassen",
+        content: "<p>Reagiert die Person?</p>",
         options: [
           { text: "Ja, er reagiert", next: "reagiert" },
           { text: "Nein, er reagiert NICHT", next: "atmenPruefen" }
@@ -143,7 +123,7 @@
         title: "Bleibe ruhig, die Sanitäter sind alarmiert.",
         content: `<ul>
           <li>Versorge lebensbedrohliche Verletzungen</li>
-          <li><span class='rot'>Notruf</span> nötig? ➡ <span class='rot'>112</span></li>
+          <li><span class='highlight'>Notruf</span> nötig? ➡ <span class='highlight'>112</span></li>
           <li>Patient betreuen</li>
           <li>Wärmeerhalt beachten</li>
         </ul>`,
@@ -164,7 +144,8 @@
       },
       {
         id: "notruf",
-        title: "Lasse den <span class='rot'>Notruf</span> unter der <span class='rot'>112</span> absetzen und lasse den <span class='rot'>Defibrillator</span> (<span class='rot'>AED</span>) holen.",
+        title: "Lasse den <span class='highlight'>Notruf</span> unter der <span class='highlight'>112</span> absetzen und lasse den <span class='highlight'>Defibrillator</span> (<span class='highlight'>AED</span>) holen.",
+        content: "",
         options: [{ text: "Weiter", next: "druckpunkt" }]
       },
       {
@@ -175,9 +156,11 @@
           <ul>
             <li><strong>30x</strong> drücken: 5 cm tief, vollständig entlasten</li>
             <li><strong>2x</strong> beatmen: Kopf überstrecken, Nase zuhalten, beatmen</li>
-            <li><span class='rot'>AED</span> einschalten und Anweisungen folgen</li>
+            <li><span class='highlight'>AED</span> einschalten und Anweisungen folgen</li>
           </ul>
-          <button id="metronomeBtn" class="primary">▶ Metronom starten (110 BPM)</button>
+          <div class="metronome">
+            <button id="metronomeBtn" class="button button-primary">▶ Metronom starten (110 BPM)</button>
+          </div>
         `,
         options: []
       },
@@ -191,24 +174,26 @@
             <li>Der Kopf ist überstreckt</li>
             <li>Der Mundwinkel ist der tiefste Punkt</li>
           </ul>
-          <img class="guide-image" src="IMG_2384.jpeg" alt="Stabile Seitenlage">
+          <img src="IMG_2384.jpeg" alt="Stabile Seitenlage">
         `,
         options: [{ text: "Weiter", next: "notruf2" }]
       },
       {
         id: "notruf2",
-        title: "Lasse den <span class='rot'>Notruf</span> unter der <span class='rot'>112</span> absetzen und lasse den <span class='rot'>Defibrillator</span> (<span class='rot'>AED</span>) holen.",
+        title: "Lasse den <span class='highlight'>Notruf</span> unter der <span class='highlight'>112</span> absetzen und lasse den <span class='highlight'>Defibrillator</span> (<span class='highlight'>AED</span>) holen.",
+        content: "",
         options: [{ text: "Weiter", next: "timer" }]
       },
       {
         id: "timer",
         title: "Atmung in 2 Minuten 30 erneut überprüfen",
-        content: `<p id="countdown">⏳ Atmung erneut überprüfen in: 2:30</p>`,
+        content: `<p class="countdown" id="countdown">⏳ Atmung erneut überprüfen in: 2:30</p>`,
         options: []
       },
       {
         id: "atmungCheck",
-        title: "<span class='blink'>ATMUNG JETZT ÜBERPRÜFEN</span>",
+        title: "<span style='color: red; font-weight: bold;'>ATMUNG JETZT ÜBERPRÜFEN</span>",
+        content: "",
         options: [{ text: "Atmung überprüfen", next: "atmenPruefen" }]
       }
     ];
@@ -219,22 +204,22 @@
 
     function showStep(stepId) {
       clearInterval(countdownInterval);
-      const step = guideSteps.find(s => s.id === stepId);
+      const step = steps.find(s => s.id === stepId);
       if (!step) return;
 
-      document.getElementById("stepTitle").innerHTML = step.title;
-      document.getElementById("stepContent").innerHTML = step.content || "";
-      document.getElementById("stepActions").innerHTML = "";
+      document.getElementById("stepContent").innerHTML = `<h2>${step.title}</h2>${step.content || ""}`;
+      const actionsDiv = document.getElementById("stepActions");
+      actionsDiv.innerHTML = "";
 
       step.options.forEach(opt => {
         const btn = document.createElement("button");
-        btn.className = "primary";
+        btn.className = "button button-primary";
         btn.innerText = opt.text;
         btn.onclick = () => {
           stepHistory.push(stepId);
           showStep(opt.next);
         };
-        document.getElementById("stepActions").appendChild(btn);
+        actionsDiv.appendChild(btn);
       });
 
       document.getElementById("backBtn").classList.toggle("hidden", stepHistory.length === 0);
@@ -250,58 +235,4 @@
     }
 
     function startCountdown(seconds) {
-      const display = document.getElementById("countdown");
-      countdownInterval = setInterval(() => {
-        const min = Math.floor(seconds / 60);
-        const sec = seconds % 60;
-        display.textContent = `⏳ Atmung erneut überprüfen in: ${min}:${sec < 10 ? '0' : ''}${sec}`;
-        if (seconds <= 0) {
-          clearInterval(countdownInterval);
-          showStep("atmungCheck");
-        }
-        seconds--;
-      }, 1000);
-    }
-
-    function toggleMetronome(e) {
-      const btn = e.target;
-      if (metronomeInterval) {
-        clearInterval(metronomeInterval);
-        metronomeInterval = null;
-        btn.textContent = "▶ Metronom starten (110 BPM)";
-      } else {
-        metronomeInterval = setInterval(() => {
-          const osc = new (window.AudioContext || window.webkitAudioContext)();
-          const beep = osc.createOscillator();
-          beep.type = "square";
-          beep.frequency.setValueAtTime(1000, osc.currentTime);
-          beep.connect(osc.destination);
-          beep.start();
-          beep.stop(osc.currentTime + 0.1);
-        }, 545); // 110 BPM = ~545 ms
-        btn.textContent = "⏹ Metronom stoppen";
-      }
-    }
-
-    document.getElementById("alarmForm").addEventListener("submit", function(e) {
-      e.preventDefault();
-      document.getElementById("alarmForm").classList.add("hidden");
-      document.getElementById("postAlarm").classList.remove("hidden");
-      document.getElementById("response").style.fontSize = "1.6em";
-    });
-
-    document.getElementById("startGuide").addEventListener("click", function() {
-      document.getElementById("mainHeader").style.display = "none";
-      document.getElementById("guideHeader").style.display = "block";
-      document.getElementById("postAlarm").classList.add("hidden");
-      document.getElementById("guide").classList.remove("hidden");
-      showStep("start");
-    });
-
-    document.getElementById("backBtn").addEventListener("click", function() {
-      const prevStep = stepHistory.pop();
-      if (prevStep) showStep(prevStep);
-    });
-  </script>
-</body>
-</html>
+      const display = document.getElementBy 
