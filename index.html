@@ -12,15 +12,16 @@
       margin: 0;
       padding: 20px;
       font-size: 1.2em;
+      overflow-x: hidden;
     }
     .container {
       background: white;
-      padding: 25px;
+      padding: 25px 15px;
       border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
-      max-width: 95%;
-      width: 600px;
+      max-width: 600px;
       margin: auto;
+      box-sizing: border-box;
     }
     h2 {
       color: #dc3545;
@@ -80,7 +81,7 @@
 </head>
 <body>
   <div class="container">
-    <h2>🚨 Sanitäter Alarmierung</h2>
+    <h2 id="mainTitle">Sanitäter Alarmierung</h2>
 
     <form id="alarmForm">
       <label for="raum">Raum:</label>
@@ -97,7 +98,7 @@
 
     <div id="postAlarm" class="hidden">
       <p id="response">✅ Sanitäter sind alarmiert!</p>
-      <button id="startGuide" class="primary">🚨 Erste Hilfe Anleitung</button>
+      <button id="startGuide" class="primary">Erste Hilfe Anleitung starten</button>
     </div>
 
     <div id="guide" class="hidden">
@@ -107,6 +108,8 @@
       <button id="backBtn" class="secondary hidden">⬅ Zurück</button>
     </div>
   </div>
+
+  <audio id="metronome" src="audio/metronom110.mp3" loop></audio>
 
   <script>
     const guideSteps = [
@@ -158,7 +161,7 @@
             <li><strong>2x</strong> beatmen: Kopf überstrecken, Nase zuhalten, in den Mund beatmen</li>
             <li>(Defibrillator einschalten + Anweisungen folgen)</li>
           </ul>
-          <button id="metronomeBtn" class="primary">▶ Metronom starten (100 BPM)</button>
+          <button id="metronomeBtn" class="primary">▶ Metronom starten (110 BPM)</button>
         `,
         options: []
       },
@@ -188,8 +191,7 @@
 
     let stepHistory = [];
     let countdownInterval;
-    const metronomeAudio = new Audio("/mnt/data/Metronome 110 BPM - For CPR Training - Chest Compression Rate #listenable #cpr.mp3");
-    metronomeAudio.loop = true;
+    const metronomeAudio = document.getElementById("metronome");
 
     function showStep(stepId) {
       clearInterval(countdownInterval);
@@ -242,7 +244,7 @@
       if (!metronomeAudio.paused) {
         metronomeAudio.pause();
         metronomeAudio.currentTime = 0;
-        btn.textContent = "▶ Metronom starten (100 BPM)";
+        btn.textContent = "▶ Metronom starten (110 BPM)";
       } else {
         metronomeAudio.play();
         btn.textContent = "⏹ Metronom stoppen";
@@ -256,6 +258,7 @@
     });
 
     document.getElementById("startGuide").addEventListener("click", function() {
+      document.getElementById("mainTitle").textContent = "Erste Hilfe Anleitung";
       document.getElementById("postAlarm").classList.add("hidden");
       document.getElementById("guide").classList.remove("hidden");
       showStep("start");
