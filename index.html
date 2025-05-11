@@ -3,68 +3,86 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Sanitäter Alarm</title>
+  <title>Erste Hilfe Anleitung</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background-color: #f0f0f0;
+      background-color: #f0f4f8;
       text-align: center;
       margin: 0;
-      padding: 10px;
-      font-size: 1.1em;
+      padding: 20px;
+      font-size: 1.2em;
+      color: #222;
     }
     .container {
       background: white;
       padding: 20px;
-      border-radius: 12px;
-      max-width: 500px;
-      margin: auto;
+      border-radius: 10px;
       box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      max-width: 100%;
+      width: 100%;
+      box-sizing: border-box;
     }
-    h2, h3 {
-      color: #c82333;
-      margin-top: 10px;
-      font-size: 1.5em;
+    h1 {
+      color: green;
+      font-size: 1.8em;
+      margin-top: 0;
+    }
+    h2 {
+      color: #dc3545;
+      font-size: 1.6em;
+    }
+    h3 {
+      font-size: 1.4em;
     }
     button {
-      font-size: 1em;
+      font-weight: bold;
+      font-size: 1.1em;
       margin: 10px auto;
       padding: 14px;
       width: 100%;
-      max-width: 340px;
+      max-width: 350px;
       border: none;
       border-radius: 8px;
       cursor: pointer;
-      font-weight: bold;
+      display: block;
     }
-    button.primary { background-color: #28a745; color: white; }
-    button.primary:hover { background-color: #218838; }
-    button.secondary { background-color: #6c757d; color: white; }
-    button.secondary:hover { background-color: #5a6268; }
-    button.danger { background-color: #dc3545; color: white; }
-    button.danger:hover { background-color: #c82333; }
+    button.primary {
+      background-color: #a8f0a0;
+      color: black;
+    }
+    button.primary:hover {
+      background-color: #90e690;
+    }
+    button.secondary {
+      background-color: #6c757d;
+      color: white;
+    }
+    button.secondary:hover {
+      background-color: #5a6268;
+    }
+    button.danger {
+      background-color: #dc3545;
+      color: white;
+    }
+    button.danger:hover {
+      background-color: #c82333;
+    }
     input, select {
-      font-size: 1em;
-      padding: 12px;
+      font-size: 1.1em;
+      padding: 14px;
       width: 100%;
-      max-width: 340px;
+      max-width: 350px;
       margin: 10px auto;
       display: block;
     }
     ul {
       text-align: left;
-      padding-left: 25px;
-      margin: 10px 0;
+      padding-left: 20px;
+      font-size: 1.1em;
+      margin-top: 10px;
+      line-height: 1.6;
     }
-    ul li {
-      margin-bottom: 8px;
-    }
-    #response {
-      color: green;
-      font-weight: bold;
-      margin-top: 15px;
-    }
-    .hidden { display: none; }
     .blink {
       animation: blink 1s infinite;
       font-weight: bold;
@@ -74,19 +92,26 @@
       0%, 100% { opacity: 1; }
       50% { opacity: 0; }
     }
+    .hidden {
+      display: none;
+    }
     img {
-      width: 100%;
+      max-width: 100%;
       height: auto;
-      margin-top: 15px;
       border-radius: 8px;
+      margin-top: 10px;
+    }
+    .section {
+      margin-top: 20px;
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2 id="mainHeading">Sanitäter Alarmierung</h2>
+    <h1>Erste Hilfe Anleitung</h1>
 
     <form id="alarmForm">
+      <h2>🚨 Sanitäter Alarmierung</h2>
       <label for="raum">Raum:</label>
       <input type="text" id="raum" placeholder="z. B. N01" required>
 
@@ -105,7 +130,6 @@
     </div>
 
     <div id="guide" class="hidden">
-      <h2>Erste Hilfe Anleitung</h2>
       <h3 id="stepTitle"></h3>
       <div id="stepContent"></div>
       <div id="stepActions"></div>
@@ -123,7 +147,7 @@
       },
       {
         id: "ansprechen",
-        title: "Reagiert der Patient auf Ansprechen - Anfassen?",
+        title: "Reagiert der Patient auf Ansprechen und Anfassen?",
         options: [
           { text: "Ja, er reagiert", next: "reagiert" },
           { text: "Nein, er reagiert NICHT", next: "atmenPruefen" }
@@ -131,7 +155,7 @@
       },
       {
         id: "reagiert",
-        title: "Patient reagiert.",
+        title: "Bleibe ruhig, die Sanitäter sind alarmiert.",
         content: `<ul>
           <li>Versorge lebensbedrohliche Verletzungen</li>
           <li>Wird der Rettungsdienst benötigt? ➡ Notruf 112</li>
@@ -142,7 +166,7 @@
       },
       {
         id: "atmenPruefen",
-        title: "Atmung überprüfen (10 Sekunden)",
+        title: "Prüfe 10 Sekunden, ob der Patient atmet.",
         content: `<ul>
           <li>Patient liegt auf dem Rücken</li>
           <li>Oberkörper ist entkleidet</li>
@@ -155,14 +179,15 @@
       },
       {
         id: "notruf",
-        title: "Notruf 112 absetzen & AED holen",
+        title: "Lasse den Notruf unter 112 absetzen und lasse den Defibrillator (AED) holen.",
         options: [{ text: "Weiter", next: "druckpunkt" }]
       },
       {
         id: "druckpunkt",
-        title: "Wiederbelebung starten",
+        title: "Starte Wiederbelebung",
         content: `
-        <ul>
+          <p><strong>Druckpunkt:</strong> mittig, zwischen den Brustwarzen</p>
+          <ul>
             <li><strong>30x</strong> 5 cm tief eindrücken + vollständig entlasten</li>
             <li><strong>2x</strong> beatmen: Kopf überstrecken, Nase zuhalten, in den Mund beatmen</li>
             <li>(Defibrillator einschalten + Anweisungen folgen)</li>
@@ -173,7 +198,7 @@
       },
       {
         id: "seitenlage",
-        title: "Stabile Seitenlage",
+        title: "Lege den Patienten in die stabile Seitenlage.",
         content: `
           <p><strong>Wichtig:</strong></p>
           <ul>
@@ -187,51 +212,28 @@
       },
       {
         id: "notruf2",
-        title: "Notruf 112 absetzen & AED holen",
+        title: "Lasse den Notruf unter 112 absetzen und lasse den Defibrillator (AED) holen.",
         options: [{ text: "Weiter", next: "timer" }]
       },
       {
         id: "timer",
-        title: "Atmung erneut überprüfen in 2:30 Minuten",
-        content: `<p id="countdown">⏳ 2:30</p>
+        title: "Atmung in 2 Minuten 30 erneut überprüfen",
+        content: `<p id="countdown">⏳ Atmung erneut überprüfen in: 2:30</p>
                   <button onclick="showStep('atmenPruefen')" class="primary">Atmung überprüfen</button>`,
         options: []
       },
       {
         id: "atmungCheck",
         title: "<span class='blink'>ATMUNG JETZT ÜBERPRÜFEN</span>",
-        options: [{ text: "Weiter", next: "atmenPruefen" }]
+        options: [{ text: "Atmung überprüfen", next: "atmenPruefen" }]
       }
     ];
 
     let stepHistory = [];
     let countdownInterval;
-    let metronomeInterval;
+    let metronomeInterval = null;
     let metronomeOn = false;
-
-    function beep() {
-      const ctx = new (window.AudioContext || window.webkitAudioContext)();
-      const osc = ctx.createOscillator();
-      osc.type = "square";
-      osc.frequency.setValueAtTime(880, ctx.currentTime);
-      osc.connect(ctx.destination);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.05);
-    }
-
-    function toggleMetronome(e) {
-      const btn = e.target;
-      if (metronomeOn) {
-        clearInterval(metronomeInterval);
-        btn.textContent = "▶ Metronom starten (110 BPM)";
-        metronomeOn = false;
-      } else {
-        beep();
-        metronomeInterval = setInterval(beep, 545); // 110 BPM = ca. 545 ms
-        btn.textContent = "⏹ Metronom stoppen";
-        metronomeOn = true;
-      }
-    }
+    let audioCtx;
 
     function showStep(stepId) {
       clearInterval(countdownInterval);
@@ -270,13 +272,44 @@
       countdownInterval = setInterval(() => {
         const min = Math.floor(seconds / 60);
         const sec = seconds % 60;
-        display.textContent = `⏳ ${min}:${sec < 10 ? '0' : ''}${sec}`;
+        display.textContent = `⏳ Atmung erneut überprüfen in: ${min}:${sec < 10 ? '0' : ''}${sec}`;
         if (seconds <= 0) {
           clearInterval(countdownInterval);
           showStep("atmungCheck");
         }
         seconds--;
       }, 1000);
+    }
+
+    function startMetronome() {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      const interval = 545; // ca. 110 BPM
+      metronomeInterval = setInterval(() => {
+        const osc = audioCtx.createOscillator();
+        osc.type = "square";
+        osc.frequency.value = 1000;
+        osc.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.05);
+      }, interval);
+      metronomeOn = true;
+    }
+
+    function stopMetronome() {
+      clearInterval(metronomeInterval);
+      if (audioCtx) audioCtx.close();
+      metronomeOn = false;
+    }
+
+    function toggleMetronome(e) {
+      const btn = e.target;
+      if (metronomeOn) {
+        stopMetronome();
+        btn.textContent = "▶ Metronom starten (110 BPM)";
+      } else {
+        startMetronome();
+        btn.textContent = "⏹ Metronom stoppen";
+      }
     }
 
     document.getElementById("alarmForm").addEventListener("submit", function(e) {
@@ -286,7 +319,6 @@
     });
 
     document.getElementById("startGuide").addEventListener("click", function() {
-      document.getElementById("mainHeading").textContent = "Erste Hilfe Anleitung";
       document.getElementById("postAlarm").classList.add("hidden");
       document.getElementById("guide").classList.remove("hidden");
       showStep("start");
