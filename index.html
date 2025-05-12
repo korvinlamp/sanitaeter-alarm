@@ -1,147 +1,135 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sanitäter Alarm & Erste Hilfe</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f8f9fa;
-            margin: 0;
-            padding: 20px;
-            text-align: center;
-        }
-        .container {
-            background: white;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-            border-radius: 10px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.2);
-        }
-        h2 {
-            color: #dc3545;
-        }
-        label, select, input, button {
-            font-size: 16px;
-            margin: 10px;
-            padding: 10px;
-            width: 90%;
-            max-width: 400px;
-        }
-        button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #c82333;
-        }
-        #response {
-            font-weight: bold;
-            margin-top: 20px;
-            font-size: 18px;
-        }
-        .hilfe-box {
-            display: none;
-            margin-top: 30px;
-            text-align: left;
-        }
-        .hilfe-schritt {
-            margin-bottom: 20px;
-            padding: 15px;
-            border-left: 5px solid #dc3545;
-            background-color: #fff3f3;
-            border-radius: 5px;
-        }
-        .hilfe-schritt h3 {
-            margin-top: 0;
-            color: #dc3545;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interaktive Erste Hilfe</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f8f9fa;
+      text-align: center;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      background: white;
+      margin: auto;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+    }
+    h2 {
+      color: #dc3545;
+    }
+    .step-box {
+      margin-top: 30px;
+    }
+    #stepText {
+      font-size: 18px;
+      margin: 20px 0;
+    }
+    .btn {
+      display: block;
+      width: 80%;
+      max-width: 300px;
+      margin: 10px auto;
+      padding: 12px;
+      font-size: 16px;
+      background-color: #dc3545;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .btn:hover {
+      background-color: #c82333;
+    }
+  </style>
 </head>
 <body>
 
-    <div class="container">
-        <h2>🚨 Sanitäter Alarmierung</h2>
-        
-        <form id="alarmForm">
-            <label for="raum">Raum:</label>
-            <input type="text" id="raum" placeholder="z. B. N01" required><br>
-            
-            <label for="aed">Defibrillator (AED) benötigt?</label>
-            <select id="aed">
-                <option value="Nein">Nein</option>
-                <option value="Ja">Ja</option>
-            </select><br>
-            
-            <button type="submit">🚨 Alarm senden</button>
-        </form>
-
-        <p id="response"></p>
-
-        <div class="hilfe-box" id="hilfeBox">
-            <h2>❗ Erste Hilfe Anleitung</h2>
-
-            <div class="hilfe-schritt">
-                <h3>1. Sicherheit & Bewusstsein prüfen</h3>
-                <p>Umgebung sichern – Sprich die Person an: „Hallo, können Sie mich hören?“</p>
-            </div>
-
-            <div class="hilfe-schritt">
-                <h3>2. Atmung prüfen</h3>
-                <p>Kopf überstrecken, Atmung hören/sehen/spüren – max. 10 Sekunden prüfen.</p>
-            </div>
-
-            <div class="hilfe-schritt">
-                <h3>3. Notruf bestätigt – AED holen (falls ausgewählt)</h3>
-                <p>Schicke jemanden los, AED zu holen. Bereite Wiederbelebung vor.</p>
-            </div>
-
-            <div class="hilfe-schritt">
-                <h3>4. Wiederbelebung starten</h3>
-                <p>Kein Puls/Atmung? <strong>30x drücken + 2x beatmen</strong>. Tiefe: 5-6 cm, Tempo: 100-120/min.</p>
-            </div>
-
-            <div class="hilfe-schritt">
-                <h3>5. AED einsetzen (falls vorhanden)</h3>
-                <p>Gerät einschalten, Anweisungen folgen. Niemals Berühren bei Schockabgabe!</p>
-            </div>
-        </div>
+  <div class="container">
+    <h2>🚨 Interaktive Erste Hilfe</h2>
+    <div class="step-box">
+      <h3 id="stepTitle">Schritt 1</h3>
+      <p id="stepText">Ist die Umgebung sicher? Spreche die Person laut an: „Hallo, können Sie mich hören?“</p>
+      <div id="buttons">
+        <button class="btn" onclick="nextStep('antwortet')">Person antwortet</button>
+        <button class="btn" onclick="nextStep('keineAntwort')">Keine Reaktion</button>
+      </div>
     </div>
+  </div>
 
-    <script>
-        document.getElementById("alarmForm").addEventListener("submit", function(event) {
-            event.preventDefault();
-            
-            var raum = document.getElementById("raum").value;
-            var aed = document.getElementById("aed").value;
-            
-            var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
-                      "?value1=" + encodeURIComponent(raum) + 
-                      "&value2=" + encodeURIComponent(aed);
+  <script>
+    const steps = {
+      antwortet: {
+        text: "Person reagiert. Atmung prüfen: Kopf überstrecken, hören/sehen/spüren – max. 10 Sekunden.",
+        buttons: [
+          { label: "Atmet normal", action: "stabileSeitenlage" },
+          { label: "Atmet nicht / unklar", action: "reanimationStart" }
+        ]
+      },
+      keineAntwort: {
+        text: "Keine Reaktion festgestellt. Atmung prüfen: Kopf überstrecken, hören/sehen/spüren – max. 10 Sekunden.",
+        buttons: [
+          { label: "Atmet normal", action: "stabileSeitenlage" },
+          { label: "Keine Atmung", action: "reanimationStart" }
+        ]
+      },
+      stabileSeitenlage: {
+        text: "Lege die Person in die stabile Seitenlage. Achte auf freie Atemwege. Überwache die Atmung bis Hilfe eintrifft.",
+        buttons: []
+      },
+      reanimationStart: {
+        text: "Keine Atmung – Starte sofort mit der Wiederbelebung: 30x drücken – 2x beatmen. Rufe ggf. jemanden, um den AED zu holen.",
+        buttons: [
+          { label: "Weiter: Anleitung Reanimation", action: "reanimationLoop" }
+        ]
+      },
+      reanimationLoop: {
+        text: "Wiederhole: 30x Brustkorb fest drücken (5-6 cm tief, 100-120/min) + 2x beatmen. Fortsetzen bis Hilfe oder AED.",
+        buttons: [
+          { label: "Schock durch AED möglich", action: "aedShock" },
+          { label: "Keine Hilfe da, weiter reanimieren", action: "reanimationLoop" }
+        ]
+      },
+      aedShock: {
+        text: "AED anschließen und Anweisungen folgen. Niemand darf den Körper berühren. Danach sofort Reanimation fortsetzen.",
+        buttons: [
+          { label: "Reanimation fortsetzen", action: "reanimationLoop" }
+        ]
+      }
+    };
 
-            fetch(url)
-                .then(response => {
-                    if (!response.ok) throw new Error("Fehler beim Senden");
-                    return response.text();
-                })
-                .then(() => {
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert!";
-                    document.getElementById("response").style.color = "green";
-                    document.getElementById("hilfeBox").style.display = "block";
-                })
-                .catch(error => {
-                    console.error("Fehler:", error);
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert!";
-                    document.getElementById("response").style.color = "green";
-                    document.getElementById("hilfeBox").style.display = "block";
-                });
+    function nextStep(key) {
+      const step = steps[key];
+      document.getElementById("stepText").textContent = step.text;
+      document.getElementById("stepTitle").textContent = "Nächster Schritt";
+
+      const btnContainer = document.getElementById("buttons");
+      btnContainer.innerHTML = "";
+
+      if (step.buttons.length === 0) {
+        const doneBtn = document.createElement("button");
+        doneBtn.textContent = "Anleitung beenden";
+        doneBtn.className = "btn";
+        doneBtn.onclick = () => {
+          document.getElementById("stepText").textContent = "Bleibe bei der Person und warte auf Hilfe.";
+          document.getElementById("buttons").innerHTML = "";
+        };
+        btnContainer.appendChild(doneBtn);
+      } else {
+        step.buttons.forEach(btn => {
+          const button = document.createElement("button");
+          button.textContent = btn.label;
+          button.className = "btn";
+          button.onclick = () => nextStep(btn.action);
+          btnContainer.appendChild(button);
         });
-    </script>
+      }
+    }
+  </script>
 
 </body>
 </html>
