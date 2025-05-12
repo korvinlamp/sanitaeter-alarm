@@ -1,135 +1,209 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interaktive Erste Hilfe</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Sanitäter Alarm</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f8f9fa;
       text-align: center;
-      padding: 20px;
+      background-color: #f8f9fa;
+      margin: 0;
+      padding: 0;
     }
     .container {
-      max-width: 600px;
+      margin: 40px auto;
+      max-width: 500px;
       background: white;
-      margin: auto;
-      padding: 30px;
-      border-radius: 12px;
-      box-shadow: 0 0 20px rgba(0,0,0,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
     h2 {
       color: #dc3545;
     }
-    .step-box {
-      margin-top: 30px;
-    }
-    #stepText {
-      font-size: 18px;
-      margin: 20px 0;
-    }
-    .btn {
-      display: block;
+    input, button {
+      font-size: 16px;
+      margin: 10px auto;
+      padding: 10px;
       width: 80%;
       max-width: 300px;
-      margin: 10px auto;
-      padding: 12px;
-      font-size: 16px;
+    }
+    button {
       background-color: #dc3545;
       color: white;
       border: none;
       border-radius: 5px;
       cursor: pointer;
     }
-    .btn:hover {
+    button:hover {
       background-color: #c82333;
+    }
+    .page {
+      display: none;
+    }
+    .active {
+      display: block;
+    }
+    #metronomeBtn {
+      background-color: #007bff;
+    }
+    #blink {
+      color: red;
+      font-weight: bold;
+      animation: blink 1s step-start 0s infinite;
+    }
+    @keyframes blink {
+      50% { opacity: 0; }
     }
   </style>
 </head>
 <body>
-
-  <div class="container">
-    <h2>🚨 Interaktive Erste Hilfe</h2>
-    <div class="step-box">
-      <h3 id="stepTitle">Schritt 1</h3>
-      <p id="stepText">Ist die Umgebung sicher? Spreche die Person laut an: „Hallo, können Sie mich hören?“</p>
-      <div id="buttons">
-        <button class="btn" onclick="nextStep('antwortet')">Person antwortet</button>
-        <button class="btn" onclick="nextStep('keineAntwort')">Keine Reaktion</button>
-      </div>
-    </div>
+<div class="container">
+  <h2>🚨 Sanitäter Alarmierung</h2>
+  <div id="alarmSection">
+    <form id="alarmForm">
+      <label for="raum">Raum:</label>
+      <input type="text" id="raum" placeholder="z. B. N01" required>
+      <br>
+      <button type="submit">🚨 Alarm senden</button>
+    </form>
+    <p id="response"></p>
   </div>
+  <div id="hilfeSection" style="display: none;">
+    <button onclick="startErsteHilfe()">🩺 Erste Hilfe Anleitung öffnen</button>
+  </div>
+  <!-- Seiten -->
+  <div id="seite1" class="page active">
+    <h3>1. Person ansprechbar?</h3>
+    <button onclick="gotoSeite(2)">[Ja, sie reagiert]</button>
+    <button onclick="ausloesenZweiterAlarm()">[Nein, sie reagiert nicht]</button>
+  </div>
+  <div id="seite2" class="page">
+    <h3>2. Atmung vorhanden?</h3>
+    <button onclick="gotoSeite(3)">[Ja, normale Atmung]</button>
+    <button onclick="gotoSeite(4)">[Nein, keine normale Atmung]</button>
+  </div>
+  <div id="seite3" class="page">
+    <h3>Stabile Seitenlage</h3>
+    <button onclick="gotoSeite(1)">Zurück zum Start</button>
+  </div>
+  <div id="seite4" class="page">
+    <h3>Starte Wiederbelebung</h3>
+    <button onclick="gotoSeite(5)">[Wiederbelebung gestartet]</button>
+    <br><br>
+    <button id="metronomeBtn" onclick="toggleMetronome()">▶️ Metronom starten (110 BPM)</button>
+  </div>
+  <div id="seite5" class="page">
+    <h3>Alle 2 Minuten 30 die Atmung erneut prüfen</h3>
+    <button onclick="gotoSeite(4)">[Atmung erneut prüfen]</button>
+    <button onclick="gotoSeite(6)">[Weiter]</button>
+  </div>
+  <div id="seite6" class="page">
+    <h3>Wiederbelebung läuft</h3>
+    <p id="blinkContainer"></p>
+    <button onclick="gotoSeite(5)">[Zurück]</button>
+  </div>
+</div>
+<script>
+  let timerInterval = null;
+  let metronomeRunning = false;
+  let metronomeInterval = null;
 
-  <script>
-    const steps = {
-      antwortet: {
-        text: "Person reagiert. Atmung prüfen: Kopf überstrecken, hören/sehen/spüren – max. 10 Sekunden.",
-        buttons: [
-          { label: "Atmet normal", action: "stabileSeitenlage" },
-          { label: "Atmet nicht / unklar", action: "reanimationStart" }
-        ]
-      },
-      keineAntwort: {
-        text: "Keine Reaktion festgestellt. Atmung prüfen: Kopf überstrecken, hören/sehen/spüren – max. 10 Sekunden.",
-        buttons: [
-          { label: "Atmet normal", action: "stabileSeitenlage" },
-          { label: "Keine Atmung", action: "reanimationStart" }
-        ]
-      },
-      stabileSeitenlage: {
-        text: "Lege die Person in die stabile Seitenlage. Achte auf freie Atemwege. Überwache die Atmung bis Hilfe eintrifft.",
-        buttons: []
-      },
-      reanimationStart: {
-        text: "Keine Atmung – Starte sofort mit der Wiederbelebung: 30x drücken – 2x beatmen. Rufe ggf. jemanden, um den AED zu holen.",
-        buttons: [
-          { label: "Weiter: Anleitung Reanimation", action: "reanimationLoop" }
-        ]
-      },
-      reanimationLoop: {
-        text: "Wiederhole: 30x Brustkorb fest drücken (5-6 cm tief, 100-120/min) + 2x beatmen. Fortsetzen bis Hilfe oder AED.",
-        buttons: [
-          { label: "Schock durch AED möglich", action: "aedShock" },
-          { label: "Keine Hilfe da, weiter reanimieren", action: "reanimationLoop" }
-        ]
-      },
-      aedShock: {
-        text: "AED anschließen und Anweisungen folgen. Niemand darf den Körper berühren. Danach sofort Reanimation fortsetzen.",
-        buttons: [
-          { label: "Reanimation fortsetzen", action: "reanimationLoop" }
-        ]
-      }
-    };
+  document.getElementById("alarmForm").addEventListener("submit", function(event) {
+    event.preventDefault();
+    const raum = document.getElementById("raum").value;
+    const aed = "Unklar";
 
-    function nextStep(key) {
-      const step = steps[key];
-      document.getElementById("stepText").textContent = step.text;
-      document.getElementById("stepTitle").textContent = "Nächster Schritt";
+    const url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
+      "?value1=" + encodeURIComponent(raum) +
+      "&value2=" + encodeURIComponent("AED " + aed);
 
-      const btnContainer = document.getElementById("buttons");
-      btnContainer.innerHTML = "";
+    fetch(url)
+      .then(() => {
+        document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+        document.getElementById("response").style.color = "green";
+        document.getElementById("hilfeSection").style.display = "block";
+      })
+      .catch(() => {
+        document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+        document.getElementById("response").style.color = "green";
+        document.getElementById("hilfeSection").style.display = "block";
+      });
+  });
 
-      if (step.buttons.length === 0) {
-        const doneBtn = document.createElement("button");
-        doneBtn.textContent = "Anleitung beenden";
-        doneBtn.className = "btn";
-        doneBtn.onclick = () => {
-          document.getElementById("stepText").textContent = "Bleibe bei der Person und warte auf Hilfe.";
-          document.getElementById("buttons").innerHTML = "";
-        };
-        btnContainer.appendChild(doneBtn);
-      } else {
-        step.buttons.forEach(btn => {
-          const button = document.createElement("button");
-          button.textContent = btn.label;
-          button.className = "btn";
-          button.onclick = () => nextStep(btn.action);
-          btnContainer.appendChild(button);
-        });
-      }
+  function startErsteHilfe() {
+    hideAllPages();
+    document.getElementById("seite1").style.display = "block";
+  }
+
+  function gotoSeite(nr) {
+    hideAllPages();
+    document.getElementById("seite" + nr).style.display = "block";
+
+    if (nr === 6) {
+      startTimer();
     }
-  </script>
+  }
 
+  function hideAllPages() {
+    const pages = document.querySelectorAll(".page");
+    pages.forEach(p => p.style.display = "none");
+    clearBlink();
+  }
+
+  function ausloesenZweiterAlarm() {
+    const raum = document.getElementById("raum").value;
+    const url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
+      "?value1=" + encodeURIComponent(raum) +
+      "&value2=" + encodeURIComponent("AED Ja");
+
+    fetch(url)
+      .then(() => {
+        gotoSeite(2);
+      });
+  }
+
+  function toggleMetronome() {
+    const audio = document.getElementById("tickSound");
+    const btn = document.getElementById("metronomeBtn");
+
+    if (!metronomeRunning) {
+      metronomeInterval = setInterval(() => {
+        audio.play();
+      }, 545); // 110 BPM = ca. 545ms pro Schlag
+      btn.innerText = "⏹️ Metronom stoppen";
+      metronomeRunning = true;
+    } else {
+      clearInterval(metronomeInterval);
+      metronomeRunning = false;
+      btn.innerText = "▶️ Metronom starten (110 BPM)";
+    }
+  }
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    const blinkDiv = document.getElementById("blinkContainer");
+    blinkDiv.innerHTML = "⏳ 2:30 bis zur nächsten Überprüfung...";
+    let time = 150;
+
+    timerInterval = setInterval(() => {
+      time--;
+      const minutes = Math.floor(time / 60);
+      const seconds = ("0" + (time % 60)).slice(-2);
+      blinkDiv.innerHTML = `⏳ ${minutes}:${seconds} bis zur nächsten Überprüfung...`;
+
+      if (time <= 0) {
+        clearInterval(timerInterval);
+        blinkDiv.innerHTML = '<p id="blink">⚠️ Atmung jetzt erneut überprüfen!</p>';
+      }
+    }, 1000);
+  }
+
+  function clearBlink() {
+    document.getElementById("blinkContainer").innerHTML = "";
+  }
+</script>
 </body>
 </html>
