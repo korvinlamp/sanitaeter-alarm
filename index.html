@@ -21,7 +21,7 @@
         h2 {
             color: #dc3545;
         }
-        input, select, button {
+        input, button {
             font-size: 16px;
             margin: 10px;
             padding: 10px;
@@ -43,6 +43,22 @@
             margin-top: 20px;
             font-size: 18px;
         }
+        #hilfeButton {
+            display: none;
+            margin-top: 20px;
+            background-color: #007bff;
+        }
+        #hilfeButton:hover {
+            background-color: #0056b3;
+        }
+        #hilfeAnleitung {
+            display: none;
+            text-align: left;
+            margin-top: 20px;
+            background-color: #e9ecef;
+            padding: 15px;
+            border-radius: 8px;
+        }
     </style>
 </head>
 <body>
@@ -55,17 +71,24 @@
             <input type="text" id="raum" placeholder="z. B. N01" required>
             <br>
             
-            <label for="aed">Defibrillator (AED) benötigt?</label>
-            <select id="aed">
-                <option value="Nein">Nein</option>
-                <option value="Ja">Ja</option>
-            </select>
-            <br>
-            
             <button type="submit">🚨 Alarm senden</button>
         </form>
 
         <p id="response"></p>
+        <button id="hilfeButton">🩺 Erste-Hilfe-Anleitung anzeigen</button>
+
+        <div id="hilfeAnleitung">
+            <h3>🩺 Erste Hilfe – Was tun?</h3>
+            <ol>
+                <li>Bewusstsein prüfen: Ansprechen & leichtes Rütteln.</li>
+                <li>Keine Reaktion? Notruf absetzen (112) & Sanitäter alarmieren.</li>
+                <li>Atmung prüfen: Kopf überstrecken, Hören/Sehen/Fühlen.</li>
+                <li>Keine normale Atmung? <strong>30x Herzdruckmassage</strong> (100–120x/min).</li>
+                <li>2x Beatmung – danach im Wechsel 30:2 fortsetzen.</li>
+                <li>AED verfügbar? Einschalten & Anweisungen folgen.</li>
+                <li>Wechseln Sie sich nach Möglichkeit alle 2 Minuten ab.</li>
+            </ol>
+        </div>
     </div>
 
     <script>
@@ -73,11 +96,8 @@
             event.preventDefault();
             
             var raum = document.getElementById("raum").value;
-            var aed = document.getElementById("aed").value;
-            
             var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
-                      "?value1=" + encodeURIComponent(raum) + 
-                      "&value2=" + encodeURIComponent(aed);
+                      "?value1=" + encodeURIComponent(raum);
 
             console.log("Sende Anfrage an:", url);
 
@@ -86,17 +106,24 @@
                     if (!response.ok) {
                         throw new Error("Server antwortete mit Status: " + response.status);
                     }
-                    return response.text(); // IFTTT gibt meist eine leere Antwort zurück
+                    return response.text();
                 })
                 .then(() => {
                     document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
-                    document.getElementById("response").style.color = "green"; // Erfolgsfarbe
+                    document.getElementById("response").style.color = "green";
+                    document.getElementById("hilfeButton").style.display = "inline-block";
                 })
                 .catch(error => {
                     console.error("Fehler:", error);
                     document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
-                    document.getElementById("response").style.color = "green"; // Zeigt trotzdem Erfolg an
+                    document.getElementById("response").style.color = "green";
+                    document.getElementById("hilfeButton").style.display = "inline-block";
                 });
+        });
+
+        document.getElementById("hilfeButton").addEventListener("click", function() {
+            var hilfeBox = document.getElementById("hilfeAnleitung");
+            hilfeBox.style.display = hilfeBox.style.display === "none" ? "block" : "none";
         });
     </script>
 
