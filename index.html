@@ -43,21 +43,23 @@
             margin-top: 20px;
             font-size: 18px;
         }
-        #hilfeButton {
-            display: none;
-            margin-top: 20px;
-            background-color: #007bff;
-        }
-        #hilfeButton:hover {
-            background-color: #0056b3;
-        }
-        #hilfeAnleitung {
+        #hilfeBox {
             display: none;
             text-align: left;
-            margin-top: 20px;
+            margin-top: 30px;
             background-color: #e9ecef;
-            padding: 15px;
-            border-radius: 8px;
+            padding: 20px;
+            border-radius: 10px;
+        }
+        #hilfeText {
+            font-size: 18px;
+            margin-bottom: 20px;
+        }
+        #weiterButton {
+            background-color: #007bff;
+        }
+        #weiterButton:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
@@ -75,55 +77,70 @@
         </form>
 
         <p id="response"></p>
-        <button id="hilfeButton">🩺 Erste-Hilfe-Anleitung anzeigen</button>
 
-        <div id="hilfeAnleitung">
-            <h3>🩺 Erste Hilfe – Was tun?</h3>
-            <ol>
-                <li>Bewusstsein prüfen: Ansprechen & leichtes Rütteln.</li>
-                <li>Keine Reaktion? Notruf absetzen (112) & Sanitäter alarmieren.</li>
-                <li>Atmung prüfen: Kopf überstrecken, Hören/Sehen/Fühlen.</li>
-                <li>Keine normale Atmung? <strong>30x Herzdruckmassage</strong> (100–120x/min).</li>
-                <li>2x Beatmung – danach im Wechsel 30:2 fortsetzen.</li>
-                <li>AED verfügbar? Einschalten & Anweisungen folgen.</li>
-                <li>Wechseln Sie sich nach Möglichkeit alle 2 Minuten ab.</li>
-            </ol>
+        <div id="hilfeBox">
+            <div id="hilfeText">Lade Erste-Hilfe-Anleitung...</div>
+            <button id="weiterButton">➡ Weiter</button>
         </div>
     </div>
 
     <script>
+        const hilfeSchritte = [
+            "1️⃣ Bewusstsein prüfen: Ansprechen & leichtes Rütteln.",
+            "2️⃣ Keine Reaktion? Notruf 112 absetzen und um Hilfe rufen.",
+            "3️⃣ Atmung prüfen: Kopf überstrecken, hören, sehen, fühlen.",
+            "4️⃣ Keine Atmung? Mit Herzdruckmassage beginnen.",
+            "5️⃣ 30x drücken – kräftig, schnell (100–120x/min), in der Mitte der Brust.",
+            "6️⃣ 2x beatmen, dann wieder 30x drücken. Wiederholen.",
+            "7️⃣ AED da? Einschalten und den Anweisungen folgen.",
+            "✅ Dranbleiben, bis professionelle Hilfe übernimmt oder Patient reagiert. Du machst das super!"
+        ];
+
+        let schrittIndex = 0;
+
         document.getElementById("alarmForm").addEventListener("submit", function(event) {
             event.preventDefault();
-            
-            var raum = document.getElementById("raum").value;
-            var url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
-                      "?value1=" + encodeURIComponent(raum);
 
-            console.log("Sende Anfrage an:", url);
+            const raum = document.getElementById("raum").value;
+            const url = "https://maker.ifttt.com/trigger/sanitaeter-alarm/with/key/cCSCnLcOR4Lqjv_YDsEOYr" +
+                        "?value1=" + encodeURIComponent(raum);
 
             fetch(url)
                 .then(response => {
                     if (!response.ok) {
-                        throw new Error("Server antwortete mit Status: " + response.status);
+                        throw new Error("Serverfehler: " + response.status);
                     }
                     return response.text();
                 })
                 .then(() => {
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Erste Hilfe starten.";
                     document.getElementById("response").style.color = "green";
-                    document.getElementById("hilfeButton").style.display = "inline-block";
+
+                    document.getElementById("alarmForm").style.display = "none"; // Eingabe ausblenden
+                    document.getElementById("hilfeBox").style.display = "block";
+                    document.getElementById("hilfeText").innerText = hilfeSchritte[0];
+                    schrittIndex = 1;
                 })
                 .catch(error => {
                     console.error("Fehler:", error);
-                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Beginnen Sie mit der Ersten Hilfe.";
+                    document.getElementById("response").innerText = "✅ Sanitäter alarmiert! Erste Hilfe starten.";
                     document.getElementById("response").style.color = "green";
-                    document.getElementById("hilfeButton").style.display = "inline-block";
+
+                    document.getElementById("alarmForm").style.display = "none";
+                    document.getElementById("hilfeBox").style.display = "block";
+                    document.getElementById("hilfeText").innerText = hilfeSchritte[0];
+                    schrittIndex = 1;
                 });
         });
 
-        document.getElementById("hilfeButton").addEventListener("click", function() {
-            var hilfeBox = document.getElementById("hilfeAnleitung");
-            hilfeBox.style.display = hilfeBox.style.display === "none" ? "block" : "none";
+        document.getElementById("weiterButton").addEventListener("click", function() {
+            if (schrittIndex < hilfeSchritte.length) {
+                document.getElementById("hilfeText").innerText = hilfeSchritte[schrittIndex];
+                schrittIndex++;
+            } else {
+                document.getElementById("hilfeText").innerText = "🎉 Anleitung abgeschlossen. Gut gemacht!";
+                this.style.display = "none";
+            }
         });
     </script>
 
