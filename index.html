@@ -88,13 +88,18 @@
       font-weight: bold;
       animation: blink 1s infinite;
     }
+    .firma-hinweis {
+      color: #999;
+      font-size: 16px;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
 
 <div id="alarm-section" class="container">
   <h2>🚨 Sanitäter Alarmieren</h2>
-  <form id="alarmForm">
+  <form id="alarmForm" action="javascript:void(0);">
     <label for="raum">Raum:</label><br>
     <input type="text" id="raum" placeholder="z. B. N01" required><br>
     <button type="submit" class="btn-red">🚨 Alarm senden</button>
@@ -151,7 +156,9 @@
           • Oberkörper ist entkleidet<br>
           • Kopf ist überstreckt
         </div>
+        <img src="bilder/atmungprüfen.jpeg" alt="atmungprüfen" style="max-width:100%;border-radius:8px;">
       `,
+      hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
       nextOptions: [
         { label: "✅ Atmung vorhanden", next: "seitenlage" },
         { label: "❌ Keine Atmung", next: "keinatmung-notruf" }
@@ -165,10 +172,12 @@
           • Kopf ist überstreckt<br>
           • Mundwinkel ist der tiefste Punkt
         </div>
+        <img src="bilder/seitenlage.jpeg" alt="stabile seitenlage" style="max-width:100%;border-radius:8px;">
       `,
+      hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
       next: "atmung-notruf"
-        },
-      "atmung-notruf": {
+    },
+    "atmung-notruf": {
       title: "📞 Notruf 112 & AED holen lassen",
       text: `
         <div class="anleitung-box">
@@ -206,10 +215,28 @@
           • Tempo: 100–120/min<br>
           • 30:2 bis Sanitäter eintreffen
         </div>
-        <button class="btn-red" onclick="toggleMetronome(this)">🕒 Takt starten</button>
+        <img src="bilder/drücken.jpeg" alt="rea drücken" style="max-width:49%;border-radius:8px;">
+        <img src="bilder/beatmen.jpeg" alt="rea beatmen" style="max-width:49%;border-radius:8px;">
+        <div><button class="btn-red" onclick="toggleMetronome(this)">🕒 Takt starten</button></div>
       `,
+      hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
+      nextOptions: [
+        { label: "⚡️ Defibrillator vorhanden", next: "defibrillation" }
+      ]
+    },
+    defibrillation: {
+      title: "Defibrillator einsetzen",
+      text: `
+        <div class="anleitung-box">
+          • Wiederbelebung fortsetzen!<br>
+          • Defibrillator einschalten<br>
+          • Anweisungen des Defibrillators folgen
+        </div>
+        <img src="bilder/defibrillation.jpeg" alt="defibrillation" style="max-width:100%;border-radius:8px;">
+      `,
+       hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
       next: null
-    }
+    },
   };
 
   // --- Show Anleitung Section ---
@@ -271,6 +298,10 @@
 
     if(historyStack.length > 1) {
       html += `<br><button class="btn-gray" onclick="goBack()">↩️ Zurück</button>`;
+    }
+
+    if(step.hinweis){
+      html += `<p class="firma-hinweis">${step.hinweis}</p>`;
     }
 
     document.getElementById("anleitung-content").innerHTML = html;
