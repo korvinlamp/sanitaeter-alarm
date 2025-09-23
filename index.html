@@ -124,8 +124,96 @@
         </div>
       `,
       next: null
-    }
-    // ... (die restlichen Schritte aus deinem alten Code hier übernehmen)
+    },
+    "atmung-vorbereitung": {
+      title: "Prüfe die Atmung für 10 Sekunden!",
+      text: `
+        <div class="anleitung-box">
+          • Person liegt auf Rücken<br>
+          • Oberkörper ist entkleidet<br>
+          • Kopf ist überstreckt
+        </div>
+        <img src="bilder/atmungprüfen.jpeg" alt="atmungprüfen" style="max-width:100%;border-radius:8px;">
+      `,
+      hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
+      nextOptions: [
+        { label: "✅ Atmung vorhanden", next: "seitenlage" },
+        { label: "❌ Keine Atmung", next: "keinatmung-notruf" }
+      ]
+    },
+    seitenlage: {
+      title: "Stabile Seitenlage",
+      text: `
+        <div class="anleitung-box">
+          • Person liegt auf der Seite<br>
+          • Kopf ist überstreckt<br>
+          • Mundwinkel ist der tiefste Punkt
+        </div>
+        <img src="bilder/seitenlage.jpeg" alt="stabile seitenlage" style="max-width:100%;border-radius:8px;">
+      `,
+      hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
+      next: "atmung-notruf"
+    },
+    "atmung-notruf": {
+      title: "📞 Notruf 112 & AED holen lassen",
+      text: `
+        <div class="anleitung-box">
+          • Andere anweisen<br>
+          • Person nicht alleine lassen!
+        </div>
+      `,
+      next: "seitenlage-timer"
+    },
+    "seitenlage-timer": {
+      title: "Nach 2 min 30 die Atmung erneut prüfen!",
+      text: `
+        <p id="timerDisplay">⏳ 2:30</p>
+      `,
+      nextOptions: [
+        { label: "‼️ Atmung jetzt prüfen", next: "atmung-vorbereitung" }
+      ]
+    },
+    "keinatmung-notruf": {
+      title: "📞 Notruf 112 & AED holen lassen",
+      text: `
+        <div class="anleitung-box">
+          • Andere anweisen<br>
+          • Person nicht alleine lassen!
+        </div>
+      `,
+      next: "reanimation"
+    },
+    reanimation: {
+      title: "Wiederbelebung starten!",
+      text: `
+        <div class="anleitung-box">
+          • 30x Brustkorb kräftig eindrücken (5 cm tief)<br>
+          • 2x beatmen (Kopf überstrecken, Nase zuhalten)<br>
+          • Tempo: 100–120/min<br>
+          • 30:2 bis Sanitäter eintreffen
+        </div>
+        <img src="bilder/drücken.jpeg" alt="rea drücken" style="max-width:49%;border-radius:8px;">
+        <img src="bilder/beatmen.jpeg" alt="rea beatmen" style="max-width:49%;border-radius:8px;">
+        <div><button class="btn-red" onclick="toggleMetronome(this)">🕒 Takt starten</button></div>
+      `,
+      hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
+      nextOptions: [
+        { label: "⚡️ Defibrillator vorhanden", next: "defibrillation" }
+      ]
+    },
+    defibrillation: {
+      title: "Defibrillator einsetzen",
+      text: `
+        <div class="anleitung-box">
+          • Wiederbelebung fortsetzen!<br>
+          • Defibrillator einschalten<br>
+          • Anweisungen des Defibrillators folgen
+        </div>
+        <img src="bilder/defibrillation.jpeg" alt="defibrillation" style="max-width:100%;border-radius:8px;">
+      `,
+       hinweis: 'Die Bilder werden freundlicherweise durch die <b>ANB – Akademie für Notfallmanagement und Brandschutz GmbH</b> zur Verfügung gestellt.',
+      next: null
+    },
   };
 
   // --- Show Anleitung Section ---
